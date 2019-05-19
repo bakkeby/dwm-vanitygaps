@@ -209,6 +209,7 @@ static void spawn(const Arg *arg);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void tile(Monitor *);
+static void tagwsmon(const Arg *arg);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void toggletag(const Arg *arg);
@@ -1668,6 +1669,29 @@ tagmon(const Arg *arg)
 	if (!selmon->sel || !mons->next)
 		return;
 	sendmon(selmon->sel, dirtomon(arg->i));
+}
+
+void
+tagwsmon(const Arg *arg)
+{
+	Monitor *m;
+	Client *c;
+	Client *next;
+	if (!mons->next)
+		return;
+
+	m = dirtomon(arg->i);
+	for (c = selmon->clients; c; c = next) { 
+		next = c->next;
+		detach(c);
+		detachstack(c);
+		c->mon = m;
+		c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
+		attach(c);
+		attachstack(c);
+	}
+	focus(NULL);
+	arrange(NULL);
 }
 
 void
