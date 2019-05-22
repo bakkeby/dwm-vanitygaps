@@ -120,6 +120,8 @@ static Key keys[] = {
 	{ MODKEY|ControlMask,           XK_period, cyclelayout,    {.i = +1 } },
 	{ MODKEY|Mod4Mask|ControlMask,  XK_comma,  tagswitchmon,   {.i = +1 } },
 	{ MODKEY|Mod4Mask|ControlMask,  XK_period, tagswitchmon,   {.i = -1 } },
+	{ MODKEY|Mod4Mask|ShiftMask,    XK_comma,  tagwsmon,       {.i = +1 } },
+	{ MODKEY|Mod4Mask|ShiftMask,    XK_period, tagwsmon,       {.i = -1 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)

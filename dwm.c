@@ -219,8 +219,12 @@ static void tagmon(const Arg *arg);
 <<<<<<< HEAD
 =======
 static void tile(Monitor *);
+<<<<<<< HEAD
 static void tagswitchmon(const Arg *arg);
 >>>>>>> tagswitchmon
+=======
+static void tagwsmon(const Arg *arg);
+>>>>>>> tagwsmon
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void toggletag(const Arg *arg);
@@ -1758,6 +1762,7 @@ tagmon(const Arg *arg)
 
 void
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 tagswitchmon(const Arg *arg)
 {
@@ -1765,10 +1770,18 @@ tagswitchmon(const Arg *arg)
 	Client *mc;
 	Client *sc;
 	Client *c;
+=======
+tagwsmon(const Arg *arg)
+{
+	Monitor *m;
+	Client *c;
+	Client *next;
+>>>>>>> tagwsmon
 	if (!mons->next)
 		return;
 
 	m = dirtomon(arg->i);
+<<<<<<< HEAD
 	
 	mc = m->clients;
 	sc = selmon->clients;
@@ -1795,6 +1808,19 @@ tagswitchmon(const Arg *arg)
 	focus(NULL);
 	arrange(m);
 	arrange(selmon);
+=======
+	for (c = selmon->clients; c; c = next) { 
+		next = c->next;
+		detach(c);
+		detachstack(c);
+		c->mon = m;
+		c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
+		attach(c);
+		attachstack(c);
+	}
+	focus(NULL);
+	arrange(NULL);
+>>>>>>> tagwsmon
 }
 
 void
