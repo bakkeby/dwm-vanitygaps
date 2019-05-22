@@ -11,6 +11,8 @@ static void togglegaps(const Arg *arg);
 /* Layouts */
 static void bstack(Monitor *m);
 static void bstackhoriz(Monitor *m);
+static void centeredmaster(Monitor *m);
+static void centeredfloatingmaster(Monitor *m);
 static void deck(Monitor *m);
 static void fibonacci(Monitor *m, int s);
 static void dwindle(Monitor *m);
@@ -235,6 +237,134 @@ bstackhoriz(Monitor *m)
 			if (th < m->wh)
 				ty += HEIGHT(c) + ih;
 		}
+	}
+}
+
+/*
+ * Centred master layout + gaps
+ * https://dwm.suckless.org/patches/centeredmaster/
+ */
+void
+centeredmaster(Monitor *m)
+{
+	int oh, ov, ih, iv;
+	unsigned int i, n, r, h, mw, mx, my, oty, ety, tw;
+	Client *c;
+
+	getgaps(m, &oh, &ov, &ih, &iv, &n);
+
+	if (n == 0)
+		return;
+
+	/* initialize areas */
+	mw = m->ww - 2*ov;
+	mx = ov;
+	my = oh;
+	tw = mw;
+
+	if (!m->nmaster) {
+		mw = 0;
+		tw = m->ww - 2*ov;
+		if (n > 1) {
+			/* only one client */
+			tw = (m->ww - 2*ov - iv) / 2;
+			mx = ov + tw;
+		}
+	} else if (n > m->nmaster) {
+		/* go mfact box in the center if more than nmaster clients */
+		mw = (m->ww - 2*ov) * m->mfact;
+		tw = m->ww - mw - 2*ov - iv;
+
+		if (n - m->nmaster > 1) {
+			/* only one client */
+			mx = (m->ww - mw) / 2;
+			tw = (m->ww - mw - 2*ov - 2*iv ) / 2;
+		}
+	}
+
+	oty = oh;
+	ety = oh;
+	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+	if (i < m->nmaster) {
+		/* nmaster clients are stacked vertically, in the center
+		 * of the screen */
+		r = (MIN(n, m->nmaster) - i);
+		h = (m->wh - my - oh - ih*(r - 1)) / r;
+		resize(c, m->wx + mx, m->wy + my, mw - (2*c->bw),
+		       h - (2*c->bw), 0);
+		my += HEIGHT(c) + ih;
+	} else {
+		/* stack clients are stacked vertically */
+		if ((i - m->nmaster) % 2 ) {
+			r = ((1 + n - i) / 2);
+			h = (m->wh - ety - oh - ih*(r - 1)) / r;
+			resize(c, m->wx + ov, m->wy + ety, tw - (2*c->bw),
+			       h - (2*c->bw), 0);
+			ety += HEIGHT(c) + ih;
+		} else {
+			r = ((1 + n - i) / 2);
+			h = (m->wh - oty - oh - ih*(r - 1)) / r;
+			resize(c, m->wx + mx + mw + iv, m->wy + oty,
+			       tw - (2*c->bw), h - (2*c->bw), 0);
+			oty += HEIGHT(c) + ih;
+		}
+	}
+}
+
+void
+centeredfloatingmaster(Monitor *m)
+{
+	int oh, ov, ih, iv, mivf;
+	unsigned int i, r, n, w, mh, mw, mx, mxo, my, myo, tx;
+	Client *c;
+
+	getgaps(m, &oh, &ov, &ih, &iv, &n);
+
+	if (n == 0)
+		return;
+
+	/* initialize nmaster area */
+	if (!m->nmaster) {
+		mh = m->wh - 2*oh;
+		mw = m->ww - 2*ov;
+		mx = mxo = 0;
+		my = myo = 0;
+	} else if (n > m->nmaster) {
+		/* go mfact box in the center if more than nmaster clients */
+		if (m->ww > m->wh) {
+			mw = m->ww * m->mfact;
+			mh = m->wh * 0.9;
+		} else {
+			mh = m->wh * m->mfact;
+			mw = m->ww * 0.9;
+		}
+		mx = mxo = (m->ww - mw) / 2;
+		my = myo = (m->wh - mh - 2*oh) / 2;
+	} else {
+		/* go fullscreen if all clients are in the master area */
+		mh = m->wh - 2*oh;
+		mw = m->ww - 2*ov;
+		mx = mxo = ov;
+		my = myo = oh;
+	}
+
+	for(i = 0, tx = ov, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+	if (i < m->nmaster) {
+		/* nmaster clients are stacked horizontally, in the center
+		 * of the screen */
+		mivf = 0.8; // master inner vertical gap factor
+		r = (MIN(n, m->nmaster) - i);
+		w = (mw + mxo - mx - iv*mivf*(r - 1)) / r;
+		resize(c, m->wx + mx, m->wy + my, w - (2*c->bw),
+		       mh - (2*c->bw), 0);
+		mx += WIDTH(c) + iv*mivf;
+	} else {
+		/* stack clients are stacked horizontally */
+		r = (n - i);
+		w = (m->ww - tx - ov - iv*(r - 1)) / r;
+		resize(c, m->wx + tx, m->wy + oh, w - (2*c->bw),
+		       m->wh - (2*c->bw) - 2*oh, 0);
+		tx += WIDTH(c) + iv;
 	}
 }
 
