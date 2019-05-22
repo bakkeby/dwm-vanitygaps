@@ -216,15 +216,8 @@ static void sigchld(int unused);
 static void spawn(const Arg *arg);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
-<<<<<<< HEAD
-=======
-static void tile(Monitor *);
-<<<<<<< HEAD
 static void tagswitchmon(const Arg *arg);
->>>>>>> tagswitchmon
-=======
 static void tagwsmon(const Arg *arg);
->>>>>>> tagwsmon
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglefullscreen(const Arg *arg);
@@ -1762,27 +1755,40 @@ tagmon(const Arg *arg)
 }
 
 void
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
+tagwsmon(const Arg *arg)
+{
+	Monitor *m;
+	Client *c;
+	Client *next;
+	if (!mons->next)
+		return;
+
+	m = dirtomon(arg->i);
+	for (c = selmon->clients; c; c = next) { 
+		//unfocus(c, 1);
+		next = c->next;
+		detach(c);
+		detachstack(c);
+		c->mon = m;
+		c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
+		attach(c);
+		attachstack(c);
+	}
+	focus(NULL);
+	arrange(NULL);
+}
+
+void
 tagswitchmon(const Arg *arg)
 {
 	Monitor *m;
 	Client *mc;
 	Client *sc;
 	Client *c;
-=======
-tagwsmon(const Arg *arg)
-{
-	Monitor *m;
-	Client *c;
-	Client *next;
->>>>>>> tagwsmon
 	if (!mons->next)
 		return;
 
 	m = dirtomon(arg->i);
-<<<<<<< HEAD
 	
 	mc = m->clients;
 	sc = selmon->clients;
@@ -1809,49 +1815,9 @@ tagwsmon(const Arg *arg)
 	focus(NULL);
 	arrange(m);
 	arrange(selmon);
-=======
-	for (c = selmon->clients; c; c = next) { 
-		next = c->next;
-		detach(c);
-		detachstack(c);
-		c->mon = m;
-		c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
-		attach(c);
-		attachstack(c);
-	}
-	focus(NULL);
-	arrange(NULL);
->>>>>>> tagwsmon
 }
 
 void
-tile(Monitor *m)
-{
-	unsigned int i, n, h, mw, my, ty;
-	Client *c;
-
-	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-	if (n == 0)
-		return;
-
-	if (n > m->nmaster)
-		mw = m->nmaster ? m->ww * m->mfact : 0;
-	else
-		mw = m->ww;
-	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
-		if (i < m->nmaster) {
-			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
-			resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
-			my += HEIGHT(c);
-		} else {
-			h = (m->wh - ty) / (n - i);
-			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
-			ty += HEIGHT(c);
-		}
-}
-
-void
->>>>>>> tagswitchmon
 togglebar(const Arg *arg)
 {
 	selmon->showbar = !selmon->showbar;
