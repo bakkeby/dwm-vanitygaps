@@ -216,6 +216,11 @@ static void sigchld(int unused);
 static void spawn(const Arg *arg);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
+<<<<<<< HEAD
+=======
+static void tile(Monitor *);
+static void tagswitchmon(const Arg *arg);
+>>>>>>> tagswitchmon
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void toggletag(const Arg *arg);
@@ -1752,6 +1757,74 @@ tagmon(const Arg *arg)
 }
 
 void
+<<<<<<< HEAD
+=======
+tagswitchmon(const Arg *arg)
+{
+	Monitor *m;
+	Client *mc;
+	Client *sc;
+	Client *c;
+	if (!mons->next)
+		return;
+
+	m = dirtomon(arg->i);
+	
+	mc = m->clients;
+	sc = selmon->clients;
+
+	for (c = mc; c; c = c->next) {
+		c->mon = selmon;
+		c->tags = selmon->tagset[selmon->seltags];
+	}
+
+	for (c = sc; c; c = c->next) {
+		c->mon = m;
+		c->tags = m->tagset[m->seltags];
+	}
+
+	selmon->clients = mc;
+	selmon->stack = mc;
+	m->clients = sc;
+	m->stack = sc;
+	
+	c = selmon->sel;
+	selmon->sel = m->sel;
+	m->sel = c;
+
+	focus(NULL);
+	arrange(m);
+	arrange(selmon);
+}
+
+void
+tile(Monitor *m)
+{
+	unsigned int i, n, h, mw, my, ty;
+	Client *c;
+
+	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+	if (n == 0)
+		return;
+
+	if (n > m->nmaster)
+		mw = m->nmaster ? m->ww * m->mfact : 0;
+	else
+		mw = m->ww;
+	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+		if (i < m->nmaster) {
+			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
+			resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
+			my += HEIGHT(c);
+		} else {
+			h = (m->wh - ty) / (n - i);
+			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
+			ty += HEIGHT(c);
+		}
+}
+
+void
+>>>>>>> tagswitchmon
 togglebar(const Arg *arg)
 {
 	selmon->showbar = !selmon->showbar;
