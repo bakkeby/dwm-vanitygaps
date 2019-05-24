@@ -216,8 +216,8 @@ static void sigchld(int unused);
 static void spawn(const Arg *arg);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
-static void tagswitchmon(const Arg *arg);
-static void tagwsmon(const Arg *arg);
+static void tagallmon(const Arg *arg);
+static void tagswapmon(const Arg *arg);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglefullscreen(const Arg *arg);
@@ -1755,18 +1755,21 @@ tagmon(const Arg *arg)
 }
 
 void
-tagwsmon(const Arg *arg)
+tagallmon(const Arg *arg)
 {
 	Monitor *m;
 	Client *c;
 	Client *next;
+
 	if (!mons->next)
 		return;
 
 	m = dirtomon(arg->i);
-	for (c = selmon->clients; c; c = next) { 
-		//unfocus(c, 1);
+	for (c = selmon->clients; c; c = next) {
 		next = c->next;
+		if (!ISVISIBLE(c))
+			continue;
+		unfocus(c, 1);
 		detach(c);
 		detachstack(c);
 		c->mon = m;
@@ -1774,47 +1777,62 @@ tagwsmon(const Arg *arg)
 		attach(c);
 		attachstack(c);
 	}
+
 	focus(NULL);
 	arrange(NULL);
 }
 
 void
-tagswitchmon(const Arg *arg)
+tagswapmon(const Arg *arg)
 {
 	Monitor *m;
-	Client *mc;
-	Client *sc;
-	Client *c;
+	Client *c, *sc = NULL, *mc = NULL, *next;
+
 	if (!mons->next)
 		return;
 
 	m = dirtomon(arg->i);
-	
-	mc = m->clients;
-	sc = selmon->clients;
 
-	for (c = mc; c; c = c->next) {
-		c->mon = selmon;
-		c->tags = selmon->tagset[selmon->seltags];
+	for (c = selmon->clients; c; c = next) {
+		next = c->next;
+		if (!ISVISIBLE(c))
+			continue;
+		unfocus(c, 1);
+		detach(c);
+		detachstack(c);
+		c->next = sc;
+		sc = c;
 	}
 
-	for (c = sc; c; c = c->next) {
+	for (c = m->clients; c; c = next) {
+		next = c->next;
+		if (!ISVISIBLE(c))
+			continue;
+		unfocus(c, 1);
+		detach(c);
+		detachstack(c);
+		c->next = mc;
+		mc = c;
+	}
+
+	for (c = sc; c; c = next) {
+		next = c->next;
 		c->mon = m;
-		c->tags = m->tagset[m->seltags];
+		c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
+		attach(c);
+		attachstack(c);
 	}
 
-	selmon->clients = mc;
-	selmon->stack = mc;
-	m->clients = sc;
-	m->stack = sc;
-	
-	c = selmon->sel;
-	selmon->sel = m->sel;
-	m->sel = c;
+	for (c = mc; c; c = next) {
+		next = c->next;
+		c->mon = selmon;
+		c->tags = selmon->tagset[selmon->seltags]; /* assign tags of target monitor */
+		attach(c);
+		attachstack(c);
+	}
 
 	focus(NULL);
-	arrange(m);
-	arrange(selmon);
+	arrange(NULL);
 }
 
 void
