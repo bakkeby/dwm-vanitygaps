@@ -4,7 +4,7 @@ My dwm 6.2 build with custom patches. Refer to [https://dwm.suckless.org/](https
 
 Included patches:
 
-   - alpha
+   - [alpha](patches/dwm-alpha-6.2.diff)
       - adds transparency for the status bar
       - refer to [https://dwm.suckless.org/patches/alpha/](https://dwm.suckless.org/patches/alpha/)
 
@@ -18,7 +18,7 @@ Included patches:
       - this is especially convenient when mapped to the mouse scrollwheel
       - refer to [https://dwm.suckless.org/patches/rotatestack/](https://dwm.suckless.org/patches/rotatestack/)
 
-   - [switchtag](dwm-switchtag-6.2.diff)
+   - [switchtag](patches/dwm-switchtag-6.2.diff)
       - dwm allow you to set application specific rules so that you can have your browser, for example, start up on tag 9 optionally on a given monitor
       - when you open your browser it is then automatically moved to the configured tag, but you have to manually enable the tag to see the newly opened application
       - this patch adds an extra configuration option for individual rules where
