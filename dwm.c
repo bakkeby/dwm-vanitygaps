@@ -137,6 +137,7 @@ typedef struct {
 	const char *instance;
 	const char *title;
 	unsigned int tags;
+	int switchtag;
 	int isfloating;
 	int monitor;
 } Rule;
@@ -302,6 +303,19 @@ applyrules(Client *c)
 			for (m = mons; m && m->num != r->monitor; m = m->next);
 			if (m)
 				c->mon = m;
+
+			if (r->switchtag) {
+				unsigned int newtagset;
+				if (r->switchtag == 2)
+					newtagset = c->mon->tagset[c->mon->seltags] ^ c->tags;
+				else
+					newtagset = c->tags;
+
+				if (newtagset) {
+					c->mon->tagset[c->mon->seltags] = newtagset;
+					arrange(c->mon);
+				}
+			}
 		}
 	}
 	if (ch.res_class)
