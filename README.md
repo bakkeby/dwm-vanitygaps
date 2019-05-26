@@ -18,6 +18,11 @@ Included patches:
       - I added an ever so small fix for multi-monitor support
       - refer to [https://dwm.suckless.org/patches/focusonnetactive/](https://dwm.suckless.org/patches/focusonnetactive/)
 
+   - [resizecorners](patches/dwm-resizecorners-6.2.diff)
+      - by default, windows only resize from the bottom right corner
+      - with this patch the mouse is warped to the nearest corner and you resize from there
+      - refer to [https://dwm.suckless.org/patches/resizecorners/](https://dwm.suckless.org/patches/resizecorners/)
+
    - [rotatestack](patches/dwm-rotatestack-6.2.diff)
       - let's you rotate through the stack
       - this is especially convenient when mapped to the mouse scrollwheel
