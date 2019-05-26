@@ -13,6 +13,11 @@ Included patches:
       - useful for demo purposes
       - refer to [https://dwm.suckless.org/patches/cyclelayouts/](https://dwm.suckless.org/patches/cyclelayouts/)
 
+   - [focusonnetactive](patches/dwm-focusonnetactive-6.2.diff)
+      - rather than highlighting a tab as urgent, activate the tab and the urgent window instead
+      - I added an ever so small fix for multi-monitor support
+      - refer to [https://dwm.suckless.org/patches/focusonnetactive/](https://dwm.suckless.org/patches/focusonnetactive/)
+
    - [rotatestack](patches/dwm-rotatestack-6.2.diff)
       - let's you rotate through the stack
       - this is especially convenient when mapped to the mouse scrollwheel
@@ -21,14 +26,6 @@ Included patches:
    - [statuspadding](dwm-statuspadding-6.2.diff)
       - adds configuration options for horizontal and vertical padding in the status bar
       - refer to [https://dwm.suckless.org/patches/statuspadding/](https://dwm.suckless.org/patches/statuspadding/)
-
-   - [switchtag](patches/dwm-switchtag-6.2.diff)
-      - dwm allow you to set application specific rules so that you can have your browser, for example, start up on tag 9 optionally on a given monitor
-      - when you open your browser it is then automatically moved to the configured tag, but you have to manually enable the tag to see the newly opened application
-      - this patch adds an extra configuration option for individual rules where
-         - 0 is default behaviour
-         - 1 automatically moves you to the tag of the newly opened application and
-         - 2 enables the tag of the newly opened application in addition to your existing enabled tags
 
    - [tagallmon](patches/dwm-tagallmon-6.2.diff)
       - dwm comes with a function `tagmon` that allows you to send a window to an adjacent monitor
@@ -57,6 +54,20 @@ Included patches:
          - [deck](https://dwm.suckless.org/patches/deck/)
          - [fibonacci](https://dwm.suckless.org/patches/fibonacci/)
          - [gridmode](https://dwm.suckless.org/patches/gridmode/)
+
+---
+
+Removed patches:
+
+   - [switchtag](patches/dwm-switchtag-6.2.diff)
+      - dwm allow you to set application specific rules so that you can have your browser, for example, start up on tag 9 optionally on a given monitor
+      - when you open your browser it is then automatically moved to the configured tag, but you have to manually enable the tag to see the newly opened application
+      - this patch adds an extra configuration option for individual rules where
+         - 0 is default behaviour
+         - 1 automatically moves you to the tag of the newly opened application and
+         - 2 enables the tag of the newly opened application in addition to your existing enabled tags
+      - opening the application a second time, however, does not result in the tag changing automatically as application rules do not apply in this situation (they are only highlighted as urgent)
+      - as such I removed this in favour of a modified focusonnetactive patch, but leaving this here for reference
 
 ---
 
