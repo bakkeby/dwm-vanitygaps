@@ -82,6 +82,10 @@ Included patches:
          - [fibonacci](https://dwm.suckless.org/patches/fibonacci/)
          - [gridmode](https://dwm.suckless.org/patches/gridmode/)
 
+   - [windowrolerule](patches/dwm-windowrolerule-6.2.diff)
+      - sometimes a single application opens different windows depending on the task at hand and this is often reflected in the `WM_WINDOW_ROLE(STRING)` x property
+      - this patch adds the role field to the rule configuration so that one can differentiate between, say, Firefox "browser" vs "Preferences" vs "Manager" or Google-chrome "browser" vs "pop-up"
+
 ---
 
 I have included my personal keybindings (`config.h`) here for reference; feel free to delete this to start fresh with default configuration (from `config.def.h`). Most notable I guess is binding `rotatestack` and `cyclelayouts` to the mouse wheel which can be rather convenient when having many windows in the stack. I also mapped middle-click to move a window to master (`zoom`) rather than toggling floating mode which you enable anyway when dragging a window.
