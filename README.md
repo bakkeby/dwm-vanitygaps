@@ -8,6 +8,18 @@ Included patches:
       - adds transparency for the status bar
       - refer to [https://dwm.suckless.org/patches/alpha/](https://dwm.suckless.org/patches/alpha/)
 
+   - [attachx](patches/dwm-attachx-6.2.diff)
+      - by default any new (non-floating) window you open in dwm becomes the new master and there are several patches that alter this behaviour
+      - this patch combines several of these attach modes into one having a configuration option to switch between them
+      - this avoids having to hardcode one specific behaviour which means that someone else can take your build and just flip a config setting to change where new windows are placed in the stack
+      - one could easily add an option to alter between these modes via keyboard shortcuts, but one generally stick to one mode so I have left this out
+      - this patch includes the following attach modes:
+         - 0 - master (default behaviour): new windows become the new master
+         - 1 - [attachabove](https://dwm.suckless.org/patches/attachabove/): new window is placed above selected client
+         - 2 - [attachaside](https://dwm.suckless.org/patches/attachaside/): new window is placed on top of the stack
+         - 3 - [attachbelow](https://dwm.suckless.org/patches/attachbelow/): new window is placed below selected client
+         - 4 - [attachbottom](https://dwm.suckless.org/patches/attachbottom/): new window is placed at the bottom of the stack
+
    - [cyclelayouts](patches/dwm-cyclelayouts-6.2.diff)
       - let's you cycle through all your layouts
       - useful for demo purposes
@@ -31,6 +43,16 @@ Included patches:
    - [statuspadding](dwm-statuspadding-6.2.diff)
       - adds configuration options for horizontal and vertical padding in the status bar
       - refer to [https://dwm.suckless.org/patches/statuspadding/](https://dwm.suckless.org/patches/statuspadding/)
+
+   - [switchtag](patches/dwm-switchtag-6.2.diff)
+      - dwm allow you to set application specific rules so that you can have your browser, for example, start up on tag 9 optionally on a given monitor
+      - when you open your browser it is then automatically moved to the configured tag, but you have to manually enable the tag to see the newly opened application
+      - this patch adds an extra configuration option for individual rules where
+         - 0 is default behaviour
+         - 1 automatically moves you to the tag of the newly opened application and
+         - 2 enables the tag of the newly opened application in addition to your existing enabled tags
+      - opening the application a second time, however, will not result in the tag changing automatically as application rules do not apply in this situation (they are only highlighted as urgent)
+      - for this reason I would recommend combining this with the `focusonnetactive` patch
 
    - [tagallmon](patches/dwm-tagallmon-6.2.diff)
       - dwm comes with a function `tagmon` that allows you to send a window to an adjacent monitor
@@ -59,20 +81,6 @@ Included patches:
          - [deck](https://dwm.suckless.org/patches/deck/)
          - [fibonacci](https://dwm.suckless.org/patches/fibonacci/)
          - [gridmode](https://dwm.suckless.org/patches/gridmode/)
-
----
-
-Removed patches:
-
-   - [switchtag](patches/dwm-switchtag-6.2.diff)
-      - dwm allow you to set application specific rules so that you can have your browser, for example, start up on tag 9 optionally on a given monitor
-      - when you open your browser it is then automatically moved to the configured tag, but you have to manually enable the tag to see the newly opened application
-      - this patch adds an extra configuration option for individual rules where
-         - 0 is default behaviour
-         - 1 automatically moves you to the tag of the newly opened application and
-         - 2 enables the tag of the newly opened application in addition to your existing enabled tags
-      - opening the application a second time, however, does not result in the tag changing automatically as application rules do not apply in this situation (they are only highlighted as urgent)
-      - as such I removed this in favour of a modified focusonnetactive patch, but leaving this here for reference
 
 ---
 

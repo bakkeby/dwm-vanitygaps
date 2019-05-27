@@ -49,7 +49,8 @@
 #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
 #define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
                                * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
-#define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))
+#define ISVISIBLEONTAG(C, T)    ((C->tags & T))
+#define ISVISIBLE(C)            ISVISIBLEONTAG(C, C->mon->tagset[C->mon->seltags])
 #define LENGTH(X)               (sizeof X / sizeof X[0])
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
@@ -143,6 +144,7 @@ typedef struct {
 	const char *instance;
 	const char *title;
 	unsigned int tags;
+	int switchtag;
 	int isfloating;
 	int monitor;
 } Rule;
@@ -154,6 +156,7 @@ static void arrange(Monitor *m);
 static void arrangemon(Monitor *m);
 static void attach(Client *c);
 static void attachstack(Client *c);
+static void attachx(Client *c);
 static void buttonpress(XEvent *e);
 static void checkotherwm(void);
 static void cleanup(void);
@@ -321,6 +324,19 @@ applyrules(Client *c)
 			for (m = mons; m && m->num != r->monitor; m = m->next);
 			if (m)
 				c->mon = m;
+
+			if (r->switchtag) {
+				unsigned int newtagset;
+				if (r->switchtag == 2)
+					newtagset = c->mon->tagset[c->mon->seltags] ^ c->tags;
+				else
+					newtagset = c->tags;
+
+				if (newtagset) {
+					c->mon->tagset[c->mon->seltags] = newtagset;
+					arrange(c->mon);
+				}
+			}
 		}
 	}
 	if (ch.res_class)
@@ -419,11 +435,62 @@ arrangemon(Monitor *m)
 }
 
 void
+attachx(Client *c)
+{
+	Client *at;
+	unsigned int n;
+
+	switch (attachmode) {
+		case 1: // above
+			if (c->mon->sel == NULL || c->mon->sel == c->mon->clients || c->mon->sel->isfloating)
+				break;
+		
+			for (at = c->mon->clients; at->next != c->mon->sel; at = at->next);
+			c->next = at->next;
+			at->next = c;
+			return;
+
+		case 2: // aside
+			for (at = c->mon->clients, n = 0; at; at = at->next)
+				if (!at->isfloating && ISVISIBLEONTAG(at, c->tags))
+					if (++n >= c->mon->nmaster)
+						break;
+
+			if (!at || !c->mon->nmaster)
+				break;
+
+			c->next = at->next;
+			at->next = c;
+			return;
+
+		case 3: // below
+			if (c->mon->sel == NULL || c->mon->sel->isfloating)
+				break;
+		
+			c->next = c->mon->sel->next;
+			c->mon->sel->next = c;
+			return;
+
+		case 4: // bottom
+			for (at = c->mon->clients; at && at->next; at = at->next);
+			if (!at)
+				break;
+
+			at->next = c;
+			return;
+	}
+
+	/* master (default) */
+	attach(c);
+}
+
+void
 attach(Client *c)
 {
 	c->next = c->mon->clients;
 	c->mon->clients = c;
 }
+
 
 void
 attachstack(Client *c)
@@ -1136,7 +1203,7 @@ manage(Window w, XWindowAttributes *wa)
 		c->isfloating = c->oldstate = trans != None || c->isfixed;
 	if (c->isfloating)
 		XRaiseWindow(dpy, c->win);
-	attach(c);
+	attachx(c);
 	attachstack(c);
 	XChangeProperty(dpy, root, netatom[NetClientList], XA_WINDOW, 32, PropModeAppend,
 		(unsigned char *) &(c->win), 1);
@@ -1542,7 +1609,7 @@ sendmon(Client *c, Monitor *m)
 	detachstack(c);
 	c->mon = m;
 	c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
-	attach(c);
+	attachx(c);
 	attachstack(c);
 	focus(NULL);
 	arrange(NULL);
