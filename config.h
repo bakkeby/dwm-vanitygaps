@@ -52,6 +52,8 @@ static const Rule rules[] = {
 	{ "Slack",          NULL,       NULL,       NULL,   1 << 1,    1,         0,            1 },
 	{ "Sublime_text",   NULL,       NULL,       NULL,   1 << 6,    1,         0,           -1 },
 	{ "Diffuse",        NULL,       NULL,       NULL,   1 << 3,    1,         0,           -1 },
+	{ "File-roller",    NULL,       NULL,       NULL,   1 << 8,    1,         1,           -1 },
+	{ "Gedit",          NULL,       NULL,       NULL,   0,         0,         1,           -1 },
 };
 
 /* layout(s) */
