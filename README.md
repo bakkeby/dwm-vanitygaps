@@ -30,6 +30,13 @@ Included patches:
       - I added an ever so small fix for multi-monitor support
       - refer to [https://dwm.suckless.org/patches/focusonnetactive/](https://dwm.suckless.org/patches/focusonnetactive/)
 
+   - [pertag](patches/dwm-pertag-6.2.diff)
+      - the pertag patch keeps layout, mwfact, barpos and nmaster settings per tag, rather than the default behaviour of having everything global across all tags
+      - in my build I ended up making using pertag configurable (should one want to disable this functionality)
+      - I also ended up integrating the `pertag_without_bar` patch that avoids storing bar configuration on a per tag basis (i.e. whether bar is enabled or not) making it configurable as well
+      - should anyone be interested in the configurable version of this patch then I have uploaded it as [dwm-pertag-configurable-6.2.diff](patches/dwm-pertag-configurable-6.2.diff)
+      - refer to [https://dwm.suckless.org/patches/pertag/](https://dwm.suckless.org/patches/pertag/)
+
    - [resizecorners](patches/dwm-resizecorners-6.2.diff)
       - by default, windows only resize from the bottom right corner
       - with this patch the mouse is warped to the nearest corner and you resize from there
@@ -65,7 +72,7 @@ Included patches:
 
    - [togglefullscreen](patches/dwm-togglefullscreen-6.2.diff)
       - a simple patch that lets you toggle fullscreen on and off using a single keybinding
-      - this is more practical than you might think as many programs have inconsitent shortcuts for going into fullscreen
+      - this is more practical than you might think as many programs have inconsistent shortcuts for going into fullscreen
     
    - [vanitygaps](patches/dwm-vanitygaps-6.2.diff)
       - there are a few patches out there that add fixed gaps between windows, with or without gaps betwen the screen frame and clients
