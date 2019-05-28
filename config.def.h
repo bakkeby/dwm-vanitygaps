@@ -5,6 +5,8 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
+static const int pertag             = 1;        /* 0 means global layout across all tags (default), 1 = layout per tag (pertag) */
+static const int pertagbar          = 1;        /* 0 means using pertag, but with the same barpos, 1 = normal pertag */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static const char col_gray1[]       = "#222222";
