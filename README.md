@@ -93,6 +93,16 @@ Included patches:
       - sometimes a single application opens different windows depending on the task at hand and this is often reflected in the `WM_WINDOW_ROLE(STRING)` x property
       - this patch adds the role field to the rule configuration so that one can differentiate between, say, Firefox "browser" vs "Preferences" vs "Manager" or Google-chrome "browser" vs "pop-up"
 
+   - [zoomswap](patches/dwm-zoomswap-6.2.diff)
+      - the default behaviour in dwm when using zoom (i.e. moving a window to become the new master) is to use _pop_ to re-attach the window on top of the chain
+      - this has the side effect of moving every window down as well, resulting in every window on the screen changing position
+      - the zoomswap patch changes this behaviour so that the current master swaps position with the other window that is to become the new master
+      - applying zoom on the current master will result in it swapping back to the previous master (if it exists)
+      - in my build I ended up making using zoomtag configurable (should one want to disable this functionality)
+      - I also ended up integrating it with the `pertag` patch so that the previous master can be remembered on a per-tag basis
+      - should anyone be interested in the pertag-compatible version of this patch then I have uploaded it as [dwm-zoomswap-pertag-configurable-6.2.diff](patches/dwm-zoomswap-pertag-configurable-6.2.diff)
+      - refer to [https://dwm.suckless.org/patches/zoomswap/](https://dwm.suckless.org/patches/zoomswap/)
+
 ---
 
 I have included my personal keybindings (`config.h`) here for reference; feel free to delete this to start fresh with default configuration (from `config.def.h`). Most notable I guess is binding `rotatestack` and `cyclelayouts` to the mouse wheel which can be rather convenient when having many windows in the stack. I also mapped middle-click to move a window to master (`zoom`) rather than toggling floating mode which you enable anyway when dragging a window.

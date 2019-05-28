@@ -16,6 +16,7 @@ static const int focusonnetactive   = 1;        /* 0 means default behaviour, 1 
 static const int attachmode         = 0;        /* 0 master (default), 1 = above, 2 = aside, 3 = below, 4 = bottom */
 static const int pertag             = 1;        /* 0 means global layout across all tags (default), 1 = layout per tag (pertag) */
 static const int pertagbar          = 1;        /* 0 means using pertag, but with the same barpos, 1 = normal pertag */
+static const int zoomswap           = 1;        /* 0 means default behaviour, 1 = zoomswap patch */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static const char col_gray1[]       = "#222222";

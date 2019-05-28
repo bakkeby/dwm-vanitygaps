@@ -1,0 +1,144 @@
+From 24610ce272ea66b46095f3d8030577173c2ae0fe Mon Sep 17 00:00:00 2001
+From: bakkeby <bakkeby@gmail.com>
+Date: Wed, 29 May 2019 00:54:25 +0200
+Subject: [PATCH] configurable pertag-compatible zoomswap patch
+
+The default behaviour in dwm when using zoom (i.e. moving a window to become the new master)
+is to use pop to re-attach the window on top of the chain. This has the side effect of moving
+every window down as well, resulting in every window on the screen changing position. The
+zoomswap patch changes this behaviour so that the current master swaps position with the other
+window that is to become the new master. Applying zoom on the current master will result in it
+swapping back to the previous master.
+
+This variant of the zoomswap patch is compatible with the pertag-configurable patch
+(dwm-pertag-configurable-6.2.diff) and is intended to be used on top of that. It is written
+to be configurable so that you can enable/disable the zoomswap functionality with the flip
+of a config item. It is also configurable to be used with or without the pertag patch.
+
+As with the pertag-configurable patch this is aimed at dwm builds where the end user can flip
+a config setting rather than having to apply hardcoded code patches.
+
+Original author:
+   Jan Christoph Ebersbach - <jceb at e-jc dot de>
+
+Refer to https://dwm.suckless.org/patches/zoomswap/
+---
+ config.def.h |  1 +
+ dwm.c        | 66 +++++++++++++++++++++++++++++++++++++++++++++++-----
+ 2 files changed, 61 insertions(+), 6 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 423742f..3c7c1f4 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -7,6 +7,7 @@ static const int showbar            = 1;        /* 0 means no bar */
+ static const int topbar             = 1;        /* 0 means bottom bar */
+ static const int pertag             = 1;        /* 0 means global layout across all tags (default), 1 = layout per tag (pertag) */
+ static const int pertagbar          = 1;        /* 0 means using pertag, but with the same barpos, 1 = normal pertag */
++static const int zoomswap           = 1;        /* 0 means default behaviour, 1 = zoomswap patch */
+ static const char *fonts[]          = { "monospace:size=10" };
+ static const char dmenufont[]       = "monospace:size=10";
+ static const char col_gray1[]       = "#222222";
+diff --git a/dwm.c b/dwm.c
+index 952f26e..85eec73 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -187,6 +187,7 @@ static void motionnotify(XEvent *e);
+ static void movemouse(const Arg *arg);
+ static Client *nexttiled(Client *c);
+ static void pop(Client *);
++static Client *prevtiled(Client *c);
+ static void propertynotify(XEvent *e);
+ static void quit(const Arg *arg);
+ static Monitor *recttomon(int x, int y, int w, int h);
+@@ -237,6 +238,7 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
+ static void zoom(const Arg *arg);
+ 
+ /* variables */
++static Client *prevzoom = NULL;
+ static const char broken[] = "broken";
+ static char stext[256];
+ static int screen;
+@@ -1250,6 +1252,15 @@ pop(Client *c)
+ 	arrange(c->mon);
+ }
+ 
++Client *
++prevtiled(Client *c) {
++	Client *p;
++	if (!c || c == c->mon->clients)
++		return NULL;
++	for (p = c->mon->clients; p && p->next != c; p = p->next);
++	return p;
++}
++
+ void
+ propertynotify(XEvent *e)
+ {
+@@ -2225,14 +2236,57 @@ void
+ zoom(const Arg *arg)
+ {
+ 	Client *c = selmon->sel;
+-
++	Client *at = NULL, *cold, *cprevious = NULL, *p;
++	
+ 	if (!selmon->lt[selmon->sellt]->arrange
+-	|| (selmon->sel && selmon->sel->isfloating))
++	|| (selmon->sel && selmon->sel->isfloating) || !c)
+ 		return;
+-	if (c == nexttiled(selmon->clients))
+-		if (!c || !(c = nexttiled(c->next)))
+-			return;
+-	pop(c);
++
++	if (zoomswap) {
++		if (c == nexttiled(selmon->clients)) {
++			if (pertag)
++				p = selmon->pertag->prevzooms[selmon->pertag->curtag];
++			else
++				p = prevzoom;
++			at = prevtiled(p);
++			if (at)
++				cprevious = nexttiled(at->next);
++			if (!cprevious || cprevious != p) {
++				if (pertag)
++					selmon->pertag->prevzooms[selmon->pertag->curtag] = NULL;
++				else
++					prevzoom = NULL;
++				if (!c || !(c = nexttiled(c->next)))
++					return;
++			} else
++				c = cprevious;
++		}
++
++		cold = nexttiled(selmon->clients);
++		if (c != cold && !at)
++			at = prevtiled(c);
++		detach(c);
++		attach(c);
++		/* swap windows instead of pushing the previous one down */
++		if (c != cold && at) {
++			if (pertag)
++				selmon->pertag->prevzooms[selmon->pertag->curtag] = cold;
++			else
++				prevzoom = cold;
++			if (cold && at != cold) {
++				detach(cold);
++				cold->next = at->next;
++				at->next = cold;
++			}
++		}
++		focus(c);
++		arrange(c->mon);
++	} else {
++		if (c == nexttiled(selmon->clients))
++			if (!c || !(c = nexttiled(c->next)))
++				return;
++		pop(c);
++	}
+ }
+ 
+ int
+-- 
+2.17.1
+
