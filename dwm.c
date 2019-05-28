@@ -187,6 +187,7 @@ static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
 static Client *nexttiled(Client *c);
 static void pop(Client *);
+static Client *prevtiled(Client *c);
 static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
@@ -237,6 +238,7 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
 
 /* variables */
+static Client *prevzoom = NULL;
 static const char broken[] = "broken";
 static char stext[256];
 static int screen;
@@ -1250,6 +1252,15 @@ pop(Client *c)
 	arrange(c->mon);
 }
 
+Client *
+prevtiled(Client *c) {
+	Client *p;
+	if (!c || c == c->mon->clients)
+		return NULL;
+	for (p = c->mon->clients; p && p->next != c; p = p->next);
+	return p;
+}
+
 void
 propertynotify(XEvent *e)
 {
@@ -2225,14 +2236,57 @@ void
 zoom(const Arg *arg)
 {
 	Client *c = selmon->sel;
-
+	Client *at = NULL, *cold, *cprevious = NULL, *p;
+	
 	if (!selmon->lt[selmon->sellt]->arrange
-	|| (selmon->sel && selmon->sel->isfloating))
+	|| (selmon->sel && selmon->sel->isfloating) || !c)
 		return;
-	if (c == nexttiled(selmon->clients))
-		if (!c || !(c = nexttiled(c->next)))
-			return;
-	pop(c);
+
+	if (zoomswap) {
+		if (c == nexttiled(selmon->clients)) {
+			if (pertag)
+				p = selmon->pertag->prevzooms[selmon->pertag->curtag];
+			else
+				p = prevzoom;
+			at = prevtiled(p);
+			if (at)
+				cprevious = nexttiled(at->next);
+			if (!cprevious || cprevious != p) {
+				if (pertag)
+					selmon->pertag->prevzooms[selmon->pertag->curtag] = NULL;
+				else
+					prevzoom = NULL;
+				if (!c || !(c = nexttiled(c->next)))
+					return;
+			} else
+				c = cprevious;
+		}
+
+		cold = nexttiled(selmon->clients);
+		if (c != cold && !at)
+			at = prevtiled(c);
+		detach(c);
+		attach(c);
+		/* swap windows instead of pushing the previous one down */
+		if (c != cold && at) {
+			if (pertag)
+				selmon->pertag->prevzooms[selmon->pertag->curtag] = cold;
+			else
+				prevzoom = cold;
+			if (cold && at != cold) {
+				detach(cold);
+				cold->next = at->next;
+				at->next = cold;
+			}
+		}
+		focus(c);
+		arrange(c->mon);
+	} else {
+		if (c == nexttiled(selmon->clients))
+			if (!c || !(c = nexttiled(c->next)))
+				return;
+		pop(c);
+	}
 }
 
 int
