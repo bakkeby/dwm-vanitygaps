@@ -25,6 +25,10 @@ Included patches:
       - useful for demo purposes
       - refer to [https://dwm.suckless.org/patches/cyclelayouts/](https://dwm.suckless.org/patches/cyclelayouts/)
 
+   - [fancybar](patches/dwm-fancybar-6.2.diff)
+      - shows the titles of all visible windows in the status bar (as opposed to showing just the selected one)
+      - refer to [https://dwm.suckless.org/patches/fancybar/](https://dwm.suckless.org/patches/fancybar/)
+
    - [focusonnetactive](patches/dwm-focusonnetactive-6.2.diff)
       - rather than highlighting a tab as urgent, activate the tab and the urgent window instead
       - I added an ever so small fix for multi-monitor support

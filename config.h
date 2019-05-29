@@ -17,12 +17,13 @@ static const int attachmode         = 2;        /* 0 = master (default), 1 = abo
 static const int pertag             = 1;        /* 0 means global layout across all tags (default), 1 = layout per tag (pertag) */
 static const int pertagbar          = 0;        /* 0 means using pertag, but with the same barpos, 1 = normal pertag */
 static const int zoomswap           = 1;        /* 0 means default behaviour, 1 = zoomswap patch */
+static const int fancybar           = 1;        /* 0 means default behaviour, 1 = fancybar patch */
 static const char *fonts[]          = { "UbuntuMono Nerd Font Mono:size=12" };
 static const char dmenufont[]       = "UbuntuMono Nerd Font Mono:size=12";
-static const char col_gray1[]       = "#222222";
+static const char col_gray1[]       = "#180A13";
 static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
+static const char col_gray3[]       = "#C6BDBD";
+static const char col_gray4[]       = "#FFF7D4";
 static const char col_cyan[]        = "#330000";  //"#005577";
 static const unsigned int baralpha    = 0xd0;
 static const unsigned int borderalpha = OPAQUE;

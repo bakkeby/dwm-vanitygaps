@@ -859,10 +859,10 @@ dirtomon(int dir)
 void
 drawbar(Monitor *m)
 {
-	int x, w, sw = 0;
+	int x, w, sw = 0, tw, mw, ew = 0;;
 	int boxs = drw->fonts->h / 9;
 	int boxw = drw->fonts->h / 6 + 2;
-	unsigned int i, occ = 0, urg = 0;
+	unsigned int i, occ = 0, urg = 0, n = 0;;
 	Client *c;
 
 	/* draw status first so it can be overdrawn by tags later */
@@ -873,6 +873,8 @@ drawbar(Monitor *m)
 	}
 
 	for (c = m->clients; c; c = c->next) {
+		if (fancybar && ISVISIBLE(c))
+			n++;
 		occ |= c->tags;
 		if (c->isurgent)
 			urg |= c->tags;
@@ -893,7 +895,41 @@ drawbar(Monitor *m)
 	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
 
 	if ((w = m->ww - sw - x) > bh) {
-		if (m->sel) {
+		if (fancybar) {
+			if (n > 0) {
+				tw = TEXTW(m->sel->name) + lrpad;
+				mw = (tw >= w || n == 1) ? 0 : (w - tw) / (n - 1);
+	
+				i = 0;
+				for (c = m->clients; c; c = c->next) {
+					if (!ISVISIBLE(c) || c == m->sel)
+						continue;
+					tw = TEXTW(c->name);
+					if(tw < mw)
+						ew += (mw - tw);
+					else
+						i++;
+				}
+				if (i > 0)
+					mw += ew / i;
+	
+				for (c = m->clients; c; c = c->next) {
+					if (!ISVISIBLE(c))
+						continue;
+					tw = MIN(m->sel == c ? w : mw, TEXTW(c->name));
+	
+					drw_setscheme(drw, scheme[m->sel == c ? SchemeSel : SchemeNorm]);
+					if (tw > 0) /* trap special handling of 0 in drw_text */
+						drw_text(drw, x, 0, tw, bh, lrpad / 2, c->name, 0);
+					if (c->isfloating)
+						drw_rect(drw, x + boxs, boxs, boxw, boxw, c->isfixed, 0);
+					x += tw;
+					w -= tw;
+				}
+			}
+			drw_setscheme(drw, scheme[SchemeNorm]);
+			drw_rect(drw, x, 0, w, bh, 1, 1);
+		} else if (m->sel) {
 			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
 			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
 			if (m->sel->isfloating)
