@@ -18,6 +18,7 @@ static const int pertag             = 1;        /* 0 means global layout across 
 static const int pertagbar          = 1;        /* 0 means using pertag, but with the same barpos, 1 = normal pertag */
 static const int zoomswap           = 1;        /* 0 means default behaviour, 1 = zoomswap patch */
 static const int fancybar           = 1;        /* 0 means default behaviour, 1 = fancybar patch */
+static const int savefloats         = 1;        /* 0 means default behaviour, 1 = savefloats patch */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static const char col_gray1[]       = "#222222";

@@ -1,0 +1,127 @@
+From 78e84789f2a5d17085d695d55450b9acba458fe0 Mon Sep 17 00:00:00 2001
+From: bakkeby <bakkeby@gmail.com>
+Date: Thu, 30 May 2019 00:37:21 +0200
+Subject: [PATCH] savefloats-configurable, saves size and position of floating windows
+
+This patch also maintains the size and position of windows when going into floating
+layout mode.
+
+Refer to https://dwm.suckless.org/patches/save_floats/
+---
+ config.def.h |  1 +
+ dwm.c        | 52 +++++++++++++++++++++++++++++++++++++++++++---------
+ 2 files changed, 44 insertions(+), 9 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 1c0b587..8c15bde 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -5,6 +5,7 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
+ static const unsigned int snap      = 32;       /* snap pixel */
+ static const int showbar            = 1;        /* 0 means no bar */
+ static const int topbar             = 1;        /* 0 means bottom bar */
++static const int savefloats         = 1;        /* 0 means default behaviour, 1 = savefloats patch */
+ static const char *fonts[]          = { "monospace:size=10" };
+ static const char dmenufont[]       = "monospace:size=10";
+ static const char col_gray1[]       = "#222222";
+diff --git a/dwm.c b/dwm.c
+index 4465af1..d81aeb1 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -88,6 +88,7 @@ struct Client {
+ 	char name[256];
+ 	float mina, maxa;
+ 	int x, y, w, h;
++	int sfx, sfy, sfw, sfh; /* stored float geometry, used on mode revert */
+ 	int oldx, oldy, oldw, oldh;
+ 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
+ 	int bw, oldbw;
+@@ -1056,6 +1057,10 @@ manage(Window w, XWindowAttributes *wa)
+ 	updatewindowtype(c);
+ 	updatesizehints(c);
+ 	updatewmhints(c);
++	c->sfx = -9999;
++	c->sfy = -9999;
++	c->sfw = c->w;
++	c->sfh = c->h;
+ 	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
+ 	grabbuttons(c, 0);
+ 	if (!c->isfloating)
+@@ -1179,8 +1184,12 @@ movemouse(const Arg *arg)
+ 			if (!c->isfloating && selmon->lt[selmon->sellt]->arrange
+ 			&& (abs(nx - c->x) > snap || abs(ny - c->y) > snap))
+ 				togglefloating(NULL);
+-			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
+-				resize(c, nx, ny, c->w, c->h, 1);
++			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating) {
++ 				resize(c, nx, ny, c->w, c->h, 1);
++				/* save last known float coordinates */
++				c->sfx = nx;
++				c->sfy = ny;
++			}
+ 			break;
+ 		}
+ 	} while (ev.type != ButtonRelease);
+@@ -1329,8 +1338,14 @@ resizemouse(const Arg *arg)
+ 				&& (abs(nw - c->w) > snap || abs(nh - c->h) > snap))
+ 					togglefloating(NULL);
+ 			}
+-			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
+-				resize(c, c->x, c->y, nw, nh, 1);
++			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating) {
++ 				resize(c, c->x, c->y, nw, nh, 1);
++				/* save last known float dimensions */
++				c->sfx = c->x;
++				c->sfy = c->y;
++				c->sfw = nw;
++				c->sfh = nh;
++			}
+ 			break;
+ 		}
+ 	} while (ev.type != ButtonRelease);
+@@ -1617,9 +1632,15 @@ showhide(Client *c)
+ 		return;
+ 	if (ISVISIBLE(c)) {
+ 		/* show clients top down */
+-		XMoveWindow(dpy, c->win, c->x, c->y);
+-		if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) && !c->isfullscreen)
+-			resize(c, c->x, c->y, c->w, c->h, 0);
++		if (savefloats && !c->mon->lt[c->mon->sellt]->arrange && c->sfx != -9999 && !c->isfullscreen) {
++			XMoveWindow(dpy, c->win, c->sfx, c->sfy);
++			resize(c, c->sfx, c->sfy, c->sfw, c->sfh, 0);
++		} else {
++			XMoveWindow(dpy, c->win, c->x, c->y);
++			if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) && !c->isfullscreen) {
++				resize(c, c->x, c->y, c->w, c->h, 0);
++			}
++		}
+ 		showhide(c->snext);
+ 	} else {
+ 		/* hide clients bottom up */
+@@ -1714,8 +1735,21 @@ togglefloating(const Arg *arg)
+ 		return;
+ 	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
+ 	if (selmon->sel->isfloating)
+-		resize(selmon->sel, selmon->sel->x, selmon->sel->y,
+-			selmon->sel->w, selmon->sel->h, 0);
++		if (savefloats && selmon->sel->sfx != -9999) {
++			/* restore last known float dimensions */
++			resize(selmon->sel, selmon->sel->sfx, selmon->sel->sfy,
++			       selmon->sel->sfw, selmon->sel->sfh, 0);
++		} else {
++			resize(selmon->sel, selmon->sel->x, selmon->sel->y,
++				selmon->sel->w, selmon->sel->h, 0);
++		}
++	else {
++		/* save last known float dimensions */
++		selmon->sel->sfx = selmon->sel->x;
++		selmon->sel->sfy = selmon->sel->y;
++		selmon->sel->sfw = selmon->sel->w;
++		selmon->sel->sfh = selmon->sel->h;
++	}
+ 	arrange(selmon);
+ }
+ 
+-- 
+2.19.1
+

@@ -51,6 +51,13 @@ Included patches:
       - this is especially convenient when mapped to the mouse scrollwheel
       - refer to [https://dwm.suckless.org/patches/rotatestack/](https://dwm.suckless.org/patches/rotatestack/)
 
+   - [savefloats](patches/dwm-savefloats-6.2.diff)
+      - saves size and position of every floating window before it is forced into tiled mode
+      - if the window is made floating again then the old dimensions will be restored
+      - the original savefloats patch worked great when toggling floating <--> tiled in a tiled layout, but the floating window dimensions were not carried over when switching to a floating layout
+      - so I ended up adding a patch for this patch to also restore floating window dimensions when going into floating layout mode and I uploaded this as [dwm-savefloats-configurable-6.2.diff](patches/dwm-savefloats-configurable-6.2.diff)
+      - refer to [https://dwm.suckless.org/patches/save_floats/](https://dwm.suckless.org/patches/save_floats/)
+
    - [statuspadding](dwm-statuspadding-6.2.diff)
       - adds configuration options for horizontal and vertical padding in the status bar
       - refer to [https://dwm.suckless.org/patches/statuspadding/](https://dwm.suckless.org/patches/statuspadding/)

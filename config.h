@@ -18,6 +18,7 @@ static const int pertag             = 1;        /* 0 means global layout across 
 static const int pertagbar          = 0;        /* 0 means using pertag, but with the same barpos, 1 = normal pertag */
 static const int zoomswap           = 1;        /* 0 means default behaviour, 1 = zoomswap patch */
 static const int fancybar           = 1;        /* 0 means default behaviour, 1 = fancybar patch */
+static const int savefloats         = 1;        /* 0 means default behaviour, 1 = savefloats patch */
 static const char *fonts[]          = { "UbuntuMono Nerd Font Mono:size=12" };
 static const char dmenufont[]       = "UbuntuMono Nerd Font Mono:size=12";
 static const char col_gray1[]       = "#180A13";
@@ -181,6 +182,8 @@ static Button buttons[] = {
 	/* click                event mask         button          function        argument */
 	{ ClkLtSymbol,          0,                 Button1,        setlayout,      {0} },
 	{ ClkLtSymbol,          0,                 Button3,        setlayout,      {.v = &layouts[2]} },
+	{ ClkLtSymbol,          0,                 Button4,        cyclelayout,    {.i = +1 } },
+	{ ClkLtSymbol,          0,                 Button5,        cyclelayout,    {.i = -1 } },
 	{ ClkWinTitle,          0,                 Button2,        zoom,           {0} },
 	{ ClkStatusText,        0,                 Button2,        spawn,          {.v = termcmd } },
 	{ ClkClientWin,         MODKEY,            Button1,        movemouse,      {0} },
