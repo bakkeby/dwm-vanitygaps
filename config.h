@@ -19,6 +19,7 @@ static const int pertagbar          = 0;        /* 0 means using pertag, but wit
 static const int zoomswap           = 1;        /* 0 means default behaviour, 1 = zoomswap patch */
 static const int fancybar           = 1;        /* 0 means default behaviour, 1 = fancybar patch */
 static const int savefloats         = 1;        /* 0 means default behaviour, 1 = savefloats patch */
+static const int nrg_force_vsplit   = 1;        /* nrowgrid layout, 1 means force 2 clients to always split vertically */
 static const char *fonts[]          = { "UbuntuMono Nerd Font Mono:size=12" };
 static const char dmenufont[]       = "UbuntuMono Nerd Font Mono:size=12";
 static const char col_gray1[]       = "#180A13";
@@ -77,6 +78,9 @@ static const Layout layouts[] = {
 	{ "⚎⚎⚎",	bstack },
 	{ "☰☰☰",	bstackhoriz },
 	{ "𝍖𝍖𝍖",	grid },
+	{ ":::",	gaplessgrid },
+	{ "---",	horizgrid },
+	{ "###",	nrowgrid },
 	{ "⟦@⟧",	spiral },
 	{ "⟦➘⟧",	dwindle },
 	{ "D[]",	deck },

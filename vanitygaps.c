@@ -14,10 +14,11 @@ static void bstackhoriz(Monitor *m);
 static void centeredmaster(Monitor *m);
 static void centeredfloatingmaster(Monitor *m);
 static void deck(Monitor *m);
-static void fibonacci(Monitor *m, int s);
 static void dwindle(Monitor *m);
-static void spiral(Monitor *m);
+static void fibonacci(Monitor *m, int s);
 static void grid(Monitor *m);
+static void nrowgrid(Monitor *m);
+static void spiral(Monitor *m);
 static void tile(Monitor *m);
 /* Internals */
 static void getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv, unsigned int *nc);
@@ -480,6 +481,47 @@ spiral(Monitor *m)
 }
 
 /*
+ * Gappless grid layout + gaps (ironically)
+ * https://dwm.suckless.org/patches/gaplessgrid/
+ */
+void
+gaplessgrid(Monitor *m) {
+	unsigned int n, cols, rows, cn, rn, i, cx, cy, cw, ch;
+	int oh, ov, ih, iv;
+	Client *c;
+
+	getgaps(m, &oh, &ov, &ih, &iv, &n);
+	if(n == 0)
+		return;
+
+	/* grid dimensions */
+	for(cols = 0; cols <= n/2; cols++)
+		if(cols*cols >= n)
+			break;
+	if(n == 5) /* set layout against the general calculation: not 1:2:2, but 2:3 */
+		cols = 2;
+	rows = n/cols;
+
+	/* window geometries */
+	cw = cols ? (m->ww - 2*ov - iv*(cols - 1)) / cols : m->ww - 2*ov;
+	cn = 0; /* current column number */
+	rn = 0; /* current row number */
+	for(i = 0, c = nexttiled(m->clients); c; i++, c = nexttiled(c->next)) {
+		if(i/rows + 1 > cols - n%cols)
+			rows = n/cols + 1;
+		ch = rows ? (m->wh - 2*oh - ih*(rows - 1)) / rows : m->wh - 2*oh;
+		cx = m->wx + ov + cn*(cw + iv);
+		cy = m->wy + oh + rn*(ch + ih);
+		resize(c, cx, cy, cw - 2 * c->bw, ch - 2 * c->bw, False);
+		rn++;
+		if(rn >= rows) {
+			rn = 0;
+			cn++;
+		}
+	}
+}
+
+/*
  * Gridmode layout + gaps
  * https://dwm.suckless.org/patches/gridmode/
  */
@@ -506,6 +548,114 @@ grid(Monitor *m)
 		cy = m->wy + (i % rows) * (ch + ih) + oh;
 		resize(c, cx, cy, cw - 2 * c->bw, ch - 2 * c->bw, False);
 		i++;
+	}
+}
+
+/*
+ * Horizontal grid layout + gaps
+ * https://dwm.suckless.org/patches/horizgrid/
+ */
+void
+horizgrid(Monitor *m) {
+	Client *c;
+	unsigned int n, i;
+	int w = 0, oh, ov, ih, iv;
+	int ntop, nbottom = 0;
+
+	/* Count windows */
+	getgaps(m, &oh, &ov, &ih, &iv, &n);
+
+	if (n == 0)
+		return;
+	else if (n == 1) { /* Just fill the whole screen */
+		c = nexttiled(m->clients);
+		resize(c, m->wx + ov, m->wy + oh, m->ww - 2*ov - (2*c->bw), m->wh - 2*oh - (2*c->bw), False);
+	} else if (n == 2) { /* Split vertically */
+		w = (m->ww - 2*ov - iv) / 2;
+		c = nexttiled(m->clients);
+		resize(c, m->wx + ov, m->wy + oh, w - (2*c->bw), m->wh - 2*oh - (2*c->bw), False);
+		c = nexttiled(c->next);
+		resize(c, m->wx + ov + w + iv, m->wy + oh, w - (2*c->bw), m->wh - 2*oh - (2*c->bw), False);
+	} else {
+		ntop = n / 2;
+		nbottom = n - ntop;
+		for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+			if (i < ntop)
+				resize(
+					c,
+					m->wx + ov + i * ((m->ww - 2*ov - iv*(ntop - 1)) / ntop + iv),
+					m->wy + oh,
+					(m->ww - 2*ov - iv*(ntop - 1)) / ntop - (2*c->bw),
+					(m->wh - 2*oh - ih) / 2 - (2*c->bw),
+					False
+				);
+			else
+				resize(
+					c,
+					m->wx + ov + (i - ntop) * ((m->ww - 2*ov - iv*(nbottom - 1)) / nbottom + iv),
+					m->wy + oh + ih + (m->wh - 2*oh - ih) / 2,
+					(m->ww - 2*ov - iv*(nbottom - 1)) / nbottom - (2*c->bw),
+					(m->wh - 2*oh - ih) / 2 - (2*c->bw),
+					False
+				);
+		}
+	}
+}
+
+/*
+ * nrowgrid layout + gaps
+ * https://dwm.suckless.org/patches/nrowgrid/
+ */
+void
+nrowgrid(Monitor *m)
+{
+	unsigned int n = 0, i = 0, ri = 0, ci = 0;  /* counters */
+	int oh, ov, ih, iv;                         /* vanitygap settings */
+	unsigned int cx, cy, cw, ch;                /* client geometry */
+	unsigned int uw = 0, uh = 0, uc = 0;        /* utilization trackers */
+	unsigned int cols, rows = m->nmaster + 1;
+	Client *c;
+
+	/* count clients */
+	getgaps(m, &oh, &ov, &ih, &iv, &n);
+
+	/* nothing to do here */
+	if (n == 0)
+		return;
+
+	/* force 2 clients to always split vertically */
+	if (nrg_force_vsplit && n == 2)
+		rows = 1;
+
+	/* never allow empty rows */
+	if (n < rows)
+		rows = n;
+
+	/* define first row */
+	cols = n / rows;
+	uc = cols;
+	cy = m->wy + oh;
+	ch = (m->wh - 2*oh - ih*(rows - 1)) / rows;
+	uh = ch;
+
+	for (c = nexttiled(m->clients); c; c = nexttiled(c->next), i++, ci++) {
+		if (ci == cols) {
+			uw = 0;
+			ci = 0;
+			ri++;
+
+			/* next row */
+			cols = (n - uc) / (rows - ri);
+			uc += cols;
+			cy = m->wy + oh + uh + ih;
+			uh += ch + ih;
+		}
+
+		cx = m->wx + ov + uw;
+		cw = (m->ww - 2*ov - uw) / (cols - ci);
+		uw += cw + iv;
+
+		resize(c, cx, cy, cw - 2 * c->bw, ch - 2 * c->bw, 0);
 	}
 }
 

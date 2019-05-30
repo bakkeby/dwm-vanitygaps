@@ -99,6 +99,9 @@ Included patches:
          - [deck](https://dwm.suckless.org/patches/deck/)
          - [fibonacci](https://dwm.suckless.org/patches/fibonacci/)
          - [gridmode](https://dwm.suckless.org/patches/gridmode/)
+         - [gapplessgrid](https://dwm.suckless.org/patches/gaplessgrid/)
+         - [horizgrid](https://dwm.suckless.org/patches/horizgrid/)
+         - [nrowgrid](https://dwm.suckless.org/patches/nrowgrid/)
 
    - [windowrolerule](patches/dwm-windowrolerule-6.2.diff)
       - sometimes a single application opens different windows depending on the task at hand and this is often reflected in the `WM_WINDOW_ROLE(STRING)` x property
