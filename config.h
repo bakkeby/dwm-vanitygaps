@@ -72,8 +72,8 @@ static const Layout layouts[] = {
 	/* symbol	arrange function */
 	{ "[]☰",	tile },    /* first entry is default */
 	{ "[M]",	monocle },
-	{ "⧉⟧⧠",	NULL },    /* no layout function means floating behavior */
 	{ "=M=",	centeredmaster },
+	{ "⧉⟧⧠",	NULL },    /* no layout function means floating behavior */
 	{ "⧉M⧠",	centeredfloatingmaster },
 	{ "⚎⚎⚎",	bstack },
 	{ "☰☰☰",	bstackhoriz },

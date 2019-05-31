@@ -1,4 +1,4 @@
-From 45a7c51593b8defaf963eedddde94dd89c57efcc Mon Sep 17 00:00:00 2001
+From 18254a055947d5541cce320437adc06146f33850 Mon Sep 17 00:00:00 2001
 From: bakkeby <bakkeby@gmail.com>
 Date: Tue, 21 May 2019 00:42:22 +0200
 Subject: [PATCH] vanitygaps, adds inner and outer gaps that can be configured
@@ -7,8 +7,8 @@ Subject: [PATCH] vanitygaps, adds inner and outer gaps that can be configured
 ---
  config.def.h |  38 ++-
  dwm.c        |  35 +--
- vanitygaps.c | 693 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 738 insertions(+), 28 deletions(-)
+ vanitygaps.c | 696 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 741 insertions(+), 28 deletions(-)
  create mode 100644 vanitygaps.c
 
 diff --git a/config.def.h b/config.def.h
@@ -157,10 +157,10 @@ index 4465af1..c3b2d82 100644
  {
 diff --git a/vanitygaps.c b/vanitygaps.c
 new file mode 100644
-index 0000000..b35cc5c
+index 0000000..860100a
 --- /dev/null
 +++ b/vanitygaps.c
-@@ -0,0 +1,693 @@
+@@ -0,0 +1,696 @@
 +/* Key binding functions */
 +static void defaultgaps(const Arg *arg);
 +static void incrgaps(const Arg *arg);
@@ -478,7 +478,8 @@ index 0000000..b35cc5c
 +void
 +centeredfloatingmaster(Monitor *m)
 +{
-+	int oh, ov, ih, iv, mivf;
++	int oh, ov, ih, iv;
++	float mivf;
 +	unsigned int i, r, n, w, mh, mw, mx, mxo, my, myo, tx;
 +	Client *c;
 +
@@ -522,6 +523,7 @@ index 0000000..b35cc5c
 +		resize(c, m->wx + mx, m->wy + my, w - (2*c->bw),
 +		       mh - (2*c->bw), 0);
 +		mx += WIDTH(c) + iv*mivf;
++		focus(c);
 +	} else {
 +		/* stack clients are stacked horizontally */
 +		r = (n - i);
@@ -530,6 +532,7 @@ index 0000000..b35cc5c
 +		       m->wh - (2*c->bw) - 2*oh, 0);
 +		tx += WIDTH(c) + iv;
 +	}
++	restack(m);
 +}
 +
 +/*

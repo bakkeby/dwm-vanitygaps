@@ -315,7 +315,8 @@ centeredmaster(Monitor *m)
 void
 centeredfloatingmaster(Monitor *m)
 {
-	int oh, ov, ih, iv, mivf;
+	int oh, ov, ih, iv;
+	float mivf;
 	unsigned int i, r, n, w, mh, mw, mx, mxo, my, myo, tx;
 	Client *c;
 
@@ -359,6 +360,7 @@ centeredfloatingmaster(Monitor *m)
 		resize(c, m->wx + mx, m->wy + my, w - (2*c->bw),
 		       mh - (2*c->bw), 0);
 		mx += WIDTH(c) + iv*mivf;
+		focus(c);
 	} else {
 		/* stack clients are stacked horizontally */
 		r = (n - i);
@@ -367,6 +369,7 @@ centeredfloatingmaster(Monitor *m)
 		       m->wh - (2*c->bw) - 2*oh, 0);
 		tx += WIDTH(c) + iv;
 	}
+	restack(m);
 }
 
 /*
