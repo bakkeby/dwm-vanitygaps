@@ -125,6 +125,10 @@ I should also note that to start various applications I have additional keybindi
 
 ---
 
+Example screenshot:
+
+![https://github.com/bakkeby/dwm-vanitygaps/wiki/bstack.jpg](https://github.com/bakkeby/dwm-vanitygaps/wiki/bstack.jpg)
+
 Example screenshot with exaggerated gaps:
 
 ![https://github.com/bakkeby/dwm-vanitygaps/wiki/vanitygaps.jpg](https://github.com/bakkeby/dwm-vanitygaps/wiki/vanitygaps.jpg)
