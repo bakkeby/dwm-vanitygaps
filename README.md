@@ -20,6 +20,14 @@ Included patches:
          - 3 - [attachbelow](https://dwm.suckless.org/patches/attachbelow/): new window is placed below selected client
          - 4 - [attachbottom](https://dwm.suckless.org/patches/attachbottom/): new window is placed at the bottom of the stack
 
+   - [autostart](patches/dwm-autostart-6.2.diff)
+      - adds automatic running of `autostart.sh` and `autostart_blocking.sh` on startup
+      - be aware that dwm will not start up as long as `autostart_blocking.sh` is running and will stay completely unresponsive until it has finished
+      - this version reads the scripts from `~/.config/dwm/` rather than `~/.dwm/` as in the original patch
+      - this patch is strictly not needed as you can include everything in `.xprofile`, `.xinitrc` or `.xsessionrc` depending on your system
+      - I added this to avoid certain conflicts when switching between window managers
+      - refer to [https://dwm.suckless.org/patches/autostart/](https://dwm.suckless.org/patches/autostart/)
+
    - [center](patches/dwm-center-6.2.diff)
       - adds an _iscentered_ rule to automatically center clients on the current monitor.
       - I added a fix for multi-monitor support (original fix did not take monitor x and y positions into account)
