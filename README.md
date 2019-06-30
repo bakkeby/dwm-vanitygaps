@@ -20,6 +20,12 @@ Included patches:
          - 3 - [attachbelow](https://dwm.suckless.org/patches/attachbelow/): new window is placed below selected client
          - 4 - [attachbottom](https://dwm.suckless.org/patches/attachbottom/): new window is placed at the bottom of the stack
 
+   - [center](patches/dwm-center-6.2.diff)
+      - adds an _iscentered_ rule to automatically center clients on the current monitor.
+      - I added a fix for multi-monitor support (original fix did not take monitor x and y positions into account)
+      - I also added automatic centering of floating popups
+      - refer to [https://dwm.suckless.org/patches/center/](https://dwm.suckless.org/patches/center/)
+
    - [cyclelayouts](patches/dwm-cyclelayouts-6.2.diff)
       - let's you cycle through all your layouts
       - useful for demo purposes

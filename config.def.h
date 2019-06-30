@@ -48,9 +48,9 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 *  WM_WINDOW_ROLE(STRING) = role
 	 */
-	/* class            role       instance    title   tags mask  switchtag  isfloating   monitor */
-	{ "Gimp",           NULL,      NULL,       NULL,   0,         1,         1,           -1 },
-	{ "Firefox",        NULL,      NULL,       NULL,   1 << 8,    1,         0,           -1 },
+	/* class            role       instance    title   tags mask  switchtag  iscentered   isfloating   monitor */
+	{ "Gimp",           NULL,      NULL,       NULL,   0,         1,         0,           1,           -1 },
+	{ "Firefox",        NULL,      NULL,       NULL,   1 << 8,    1,         0,           0,           -1 },
 };
 
 /* layout(s) */

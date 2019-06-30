@@ -50,16 +50,19 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 *  WM_WINDOW_ROLE(STRING) = role
 	 */
-	/* class            role        instance    title   tags mask  switchtag  isfloating   monitor */
-	{ "Gimp",           NULL,       NULL,       NULL,   1 << 4,    1,         1,           -1 },
-	{ "Firefox",        NULL,       NULL,       NULL,   1 << 7,    1,         0,           -1 },
-	{ "Google-chrome",  "pop-up",   NULL,       NULL,   0,         0,         1,           -1 },
-	{ "Google-chrome",  "browser",  NULL,       NULL,   1 << 7,    1,         0,            2 },
-	{ "Slack",          NULL,       NULL,       NULL,   1 << 1,    1,         0,            1 },
-	{ "Sublime_text",   NULL,       NULL,       NULL,   1 << 6,    1,         0,           -1 },
-	{ "Diffuse",        NULL,       NULL,       NULL,   1 << 3,    1,         0,           -1 },
-	{ "File-roller",    NULL,       NULL,       NULL,   1 << 8,    1,         1,           -1 },
-	{ "Gedit",          NULL,       NULL,       NULL,   0,         0,         1,           -1 },
+	/* class            role                          instance     title   tags mask  switchtag  iscentered   isfloating   monitor */
+	{ "Gimp",           NULL,                         NULL,        NULL,   1 << 4,    1,         0,           1,           -1 },
+	{ "Firefox",        NULL,                         NULL,        NULL,   1 << 7,    1,         0,           0,           -1 },
+	{ "Google-chrome",  "GtkFileChooserDialog",       "Save File", NULL,   0,         0,         1,           1,           -1 },
+	{ "Google-chrome",  "pop-up",                     NULL,        NULL,   0,         0,         1,           1,           -1 },
+	{ "Google-chrome",  "browser",                    NULL,        NULL,   1 << 7,    1,         1,           0,            2 },
+	{ "Slack",          NULL,                         NULL,        NULL,   1 << 1,    1,         0,           0,            1 },
+	{ "Sublime_text",   NULL,                         NULL,        NULL,   1 << 6,    1,         0,           0,           -1 },
+	{ "Diffuse",        NULL,                         NULL,        NULL,   1 << 3,    1,         0,           0,           -1 },
+	{ "File-roller",    NULL,                         NULL,        NULL,   1 << 8,    1,         1,           1,           -1 },
+	{ "Gedit",          NULL,                         NULL,        NULL,   0,         0,         1,           1,           -1 },
+	{ "SpiderOakONE",   NULL,                         NULL,        NULL,   0,         0,         1,           1,           -1 },
+	{ "Gnome-terminal", "gnome-terminal-preferences", NULL,        NULL,   0,         0,         1,           0,           -1 },
 };
 
 /* layout(s) */
