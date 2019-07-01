@@ -783,6 +783,7 @@ expose(XEvent *e)
 void
 focus(Client *c)
 {
+	Client *at;
 	if (!c || !ISVISIBLE(c))
 		for (c = selmon->stack; c && !ISVISIBLE(c); c = c->snext);
 	if (selmon->sel && selmon->sel != c)
@@ -802,6 +803,9 @@ focus(Client *c)
 		XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
 	}
 	selmon->sel = c;
+	for (at = selmon->clients; at; at = at->next)
+		if (at != c && at->isfullscreen && ISVISIBLE(at))
+			setfullscreen(at, 0);
 	drawbars();
 }
 
