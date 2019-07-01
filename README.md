@@ -48,6 +48,11 @@ Included patches:
       - I added an ever so small fix for multi-monitor support
       - refer to [https://dwm.suckless.org/patches/focusonnetactive/](https://dwm.suckless.org/patches/focusonnetactive/)
 
+   - [losefullscreen](patches/dwm-losefullscreen-6.2.diff)
+      - by default in dwm it is possible to make an application fullscreen, then use the focusstack keybindings to focus on other windows beneath the current window
+      - it is also possible to spawn new windows (e.g. a terminal) that end up getting focus while the previous window remains in fullscreen
+      - this patch ensures that in such scenarios the previous window loses fullscreen
+
    - [pertag](patches/dwm-pertag-6.2.diff)
       - the pertag patch keeps layout, mwfact, barpos and nmaster settings per tag, rather than the default behaviour of having everything global across all tags
       - in my build I ended up making using pertag configurable (should one want to disable this functionality)
