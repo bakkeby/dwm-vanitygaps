@@ -96,6 +96,10 @@ Included patches:
       - this patch replicates the same behaviour, but for all visible windows on the current monitor
       - let's you _swoosh_ everything to the side before opening something else while reassuring onlookers that yes you do live up to wearing those sunglasses while working
 
+   - [tagmonfixfs](patches/dwm-tagmonfixfs-6.2.diff)
+      - if you try to send a fullscreen window to an adjacent monitor using `tagmon` then the window is moved behind the scenes, but it remains in fullscreen on the original monitor until you exit fullscreen view (at which point it will appear on the adjacent monitor)
+      - this patch allows a fullscreen window to be moved to an adjacent monitor while remaining in fullscreen
+
    - [tagswapmon](patches/dwm-tagswapmon-6.2.diff)
       - similarly to `tagallmon` this patch allows you to swap all visible windows on the current monitor with all visible windows on an adjacent monitor
       - this may be useful if you have a large main (master) display and one or more smaller secondary (stack) displays

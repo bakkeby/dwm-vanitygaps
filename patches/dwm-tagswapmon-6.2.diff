@@ -76,6 +76,10 @@ index 4465af1..9650638 100644
 +		c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
 +		attach(c);
 +		attachstack(c);
++		if (c->isfullscreen) {
++			setfullscreen(c, 0);
++			setfullscreen(c, 1);
++		}
 +	}
 +
 +	for (c = mc; c; c = next) {
@@ -84,6 +88,10 @@ index 4465af1..9650638 100644
 +		c->tags = selmon->tagset[selmon->seltags]; /* assign tags of target monitor */
 +		attach(c);
 +		attachstack(c);
++		if (c->isfullscreen) {
++			setfullscreen(c, 0);
++			setfullscreen(c, 1);
++		}
 +	}
 +
 +	focus(NULL);

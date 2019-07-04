@@ -59,6 +59,10 @@ index 4465af1..f73d8e3 100644
 +		c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
 +		attach(c);
 +		attachstack(c);
++		if (c->isfullscreen) {
++			setfullscreen(c, 0);
++			setfullscreen(c, 1);
++		}
 +	}
 +
 +	focus(NULL);

@@ -2015,9 +2015,14 @@ tag(const Arg *arg)
 void
 tagmon(const Arg *arg)
 {
-	if (!selmon->sel || !mons->next)
+	Client *c = selmon->sel;
+	if (!c || !mons->next)
 		return;
-	sendmon(selmon->sel, dirtomon(arg->i));
+	sendmon(c, dirtomon(arg->i));
+	if (c->isfullscreen) {
+		setfullscreen(c, 0);
+		setfullscreen(c, 1);
+	}
 }
 
 void
@@ -2042,6 +2047,10 @@ tagallmon(const Arg *arg)
 		c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
 		attach(c);
 		attachstack(c);
+		if (c->isfullscreen) {
+			setfullscreen(c, 0);
+			setfullscreen(c, 1);
+		}
 	}
 
 	focus(NULL);
@@ -2087,6 +2096,10 @@ tagswapmon(const Arg *arg)
 		c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
 		attach(c);
 		attachstack(c);
+		if (c->isfullscreen) {
+			setfullscreen(c, 0);
+			setfullscreen(c, 1);
+		}
 	}
 
 	for (c = mc; c; c = next) {
@@ -2095,6 +2108,10 @@ tagswapmon(const Arg *arg)
 		c->tags = selmon->tagset[selmon->seltags]; /* assign tags of target monitor */
 		attach(c);
 		attachstack(c);
+		if (c->isfullscreen) {
+			setfullscreen(c, 0);
+			setfullscreen(c, 1);
+		}
 	}
 
 	focus(NULL);
