@@ -2,7 +2,13 @@ My dwm 6.2 build with custom patches. Refer to [https://dwm.suckless.org/](https
 
 ---
 
-Included patches:
+How does this build / fork of dwm stand out compared to so many others? Due to the nature of dwm and arbitrary restrictions such as not exceeding a certain number of lines of code, individual patches can be applied in order to tailor it to your needs. The side effect of this is that most patches, and in turn most builds, are essentially hardcoded to offer specific features.
+
+In this build the vast majority of patches that have been applied can be configured on or off. If you have ever been curious about trying out dwm, but have been discouraged by manual patching, then this may be a good starting point to see what a "fully fledged" dwm can look like. Want to try out the `pertag` patch? Just flip a config and recompile. Once you have found out what works for you and what don't then you should be in a better position to choose patches should you want to start patching from scratch.
+
+---
+
+Patches included:
 
    - [alpha](patches/dwm-alpha-6.2.diff)
       - adds transparency for the status bar
@@ -153,7 +159,7 @@ Included patches:
 
 I have included my personal keybindings (`config.h`) here for reference; feel free to delete this to start fresh with default configuration (from `config.def.h`). Most notable I guess is binding `rotatestack` and `cyclelayouts` to the mouse wheel which can be rather convenient when having many windows in the stack. I also mapped middle-click to move a window to master (`zoom`) rather than toggling floating mode which you enable anyway when dragging a window.
 
-I should also note that to start various applications I have additional keybindings through sxhkd.
+I should also note that to start various applications I have additional keybindings through `sxhkd`.
 
 ---
 
