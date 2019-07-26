@@ -91,6 +91,15 @@ Included patches:
       - opening the application a second time, however, will not result in the tag changing automatically as application rules do not apply in this situation (they are only highlighted as urgent)
       - for this reason I would recommend combining this with the `focusonnetactive` patch
 
+   - [systray](patches/dwm-systray-6.2.diff)
+      - a systray in dwm is something that I thought I did not need, but eventually for work related reasons I did and standalone systray applications did not work that well for me
+      - getting a system tray up and running in dwm is fairly straightforward based on the patches available on the reference site, but once you add the [alpha](patches/dwm-alpha-6.2.diff) patch into the mix it is a different story entirely
+      - managing to get the system tray to play well with a transparent menu bar has arguably been the most challenging patch that I have applied so far
+      - for reference I have prepared two patches
+         - a combined alpha and systray patch on top of 6.2: [dwm-alpha-and-systray-6.2.diff](patches/dwm-alpha-and-systray-6.2.diff)
+         - a standalone patch applying my custom systray on top of an already applied 6.2 alpha patch: [dwm-systray-on-top-of-alpha-6.2.diff](patches/dwm-systray-on-top-of-alpha-6.2.diff)
+      - refer to [https://dwm.suckless.org/patches/systray/](https://dwm.suckless.org/patches/systray/)
+
    - [tagallmon](patches/dwm-tagallmon-6.2.diff)
       - dwm comes with a function `tagmon` that allows you to send a window to an adjacent monitor
       - this patch replicates the same behaviour, but for all visible windows on the current monitor
@@ -107,13 +116,13 @@ Included patches:
    - [togglefullscreen](patches/dwm-togglefullscreen-6.2.diff)
       - a simple patch that lets you toggle fullscreen on and off using a single keybinding
       - this is more practical than you might think as many programs have inconsistent shortcuts for going into fullscreen
-    
+
    - [vanitygaps](patches/dwm-vanitygaps-6.2.diff)
       - there are a few patches out there that add fixed gaps between windows, with or without gaps betwen the screen frame and clients
       - vanity gaps do this as well, with the difference that the size of inner and outer gaps can be configured separately (as well as the size of horizontal and vertical gaps, respectively)
       - additionally the size of the gaps can be altered on the fly using keyboard shortcuts (in practice though this is mostly for demo-purposes)
       - besides vanity reasons (read: unixporn), gaps can also remove a bit of the claustrophobic feel that tiling window managers often impose on new users
-      - includes smartgaps support: whether or not to include outer borders when a single window is open 
+      - includes smartgaps support: whether or not to include outer borders when a single window is open
       - includes the option of toggling gaps on and off
       - includes a series of vanitygap-enabled layouts (nobody should need this many though, the idea being that you remove the ones you don't need):
          - the default tile layout
