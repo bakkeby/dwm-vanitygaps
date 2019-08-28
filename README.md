@@ -40,6 +40,11 @@ Patches included:
       - I also added automatic centering of floating popups
       - refer to [https://dwm.suckless.org/patches/center/](https://dwm.suckless.org/patches/center/)
 
+   - [cfacts](patches/dwm-cfacts-6.2.diff)
+      - provides the ability to assign different weights to clients in their respective stack in tiled layout
+      - in my vanitygaps build I also added cfacts support to bottomstack, centeredmaster and deck layouts that can be found in [dwm-vanitygaps-cfacts-6.2.diff](patches/dwm-vanitygaps-cfacts-6.2.diff)
+      - refer to [https://dwm.suckless.org/patches/cfacts/](https://dwm.suckless.org/patches/cfacts/)
+
    - [cyclelayouts](patches/dwm-cyclelayouts-6.2.diff)
       - let's you cycle through all your layouts
       - useful for demo purposes
@@ -140,6 +145,7 @@ Patches included:
          - [gapplessgrid](https://dwm.suckless.org/patches/gaplessgrid/)
          - [horizgrid](https://dwm.suckless.org/patches/horizgrid/)
          - [nrowgrid](https://dwm.suckless.org/patches/nrowgrid/)
+      - [cfacts](https://dwm.suckless.org/patches/cfacts/) support for tile, bottomstack, centeredmaster and deck layouts can be found in [dwm-vanitygaps-cfacts-6.2.diff](patches/dwm-vanitygaps-cfacts-6.2.diff)
 
    - [windowrolerule](patches/dwm-windowrolerule-6.2.diff)
       - sometimes a single application opens different windows depending on the task at hand and this is often reflected in the `WM_WINDOW_ROLE(STRING)` x property
