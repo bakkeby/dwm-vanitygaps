@@ -54,6 +54,29 @@ Patches included:
       - shows the titles of all visible windows in the status bar (as opposed to showing just the selected one)
       - refer to [https://dwm.suckless.org/patches/fancybar/](https://dwm.suckless.org/patches/fancybar/)
 
+   - [flextile](patches/dwm-flextile-6.2.diff)
+      - flextile is a flexible version of the original tile layout that supports horizontal and vertical split as well as three different stack modes: horizontal, vertical, deck
+      - the original patch (referred to above) has been ported to 6.2 as-is and incorporates the pertag, nmaster and bottom stack layouts
+      - the 5.8.2 patch has a custom solution for pertag and overrides the Monitor struct, which makes it incompatible with the (now) better implemented pertag patch
+      - for this reason I ended up changing flextile quite significantly:
+         - removing the incorporated / custom pertag patch (either you have it or you don't)
+         - dwm now comes with nmaster so no need for the patch to provide that
+         - added vanitygaps
+         - added cfacts
+         - added gappless grid mode as a stack option
+         - incorporated the centered master layout (both horizontal and vertical split)
+         - added option to set predefined layouts via keyboard shortcuts
+      - the end result is that this one layout can replace the following layouts:
+         - tile
+         - deck
+         - monocle
+         - centeredmaster
+         - bstack
+         - bstackhoriz
+         - gapplessgrid
+      - I added this expanded version of flextile as [dwm-flextile-pertag-cfacts-vanitygaps-grid-centered-6.2.diff](dwm-flextile-pertag-cfacts-vanitygaps-grid-centered-6.2.diff)
+      - refer to [https://dwm.suckless.org/patches/flextile/](https://dwm.suckless.org/patches/flextile/)
+
    - [focusonnetactive](patches/dwm-focusonnetactive-6.2.diff)
       - rather than highlighting a tab as urgent, activate the tab and the urgent window instead
       - I added an ever so small fix for multi-monitor support
@@ -145,6 +168,7 @@ Patches included:
          - [gapplessgrid](https://dwm.suckless.org/patches/gaplessgrid/)
          - [horizgrid](https://dwm.suckless.org/patches/horizgrid/)
          - [nrowgrid](https://dwm.suckless.org/patches/nrowgrid/)
+         - [flextile](https://dwm.suckless.org/patches/flextile/) (refer to the flextile patch for this)
       - [cfacts](https://dwm.suckless.org/patches/cfacts/) support for tile, bottomstack, centeredmaster and deck layouts can be found in [dwm-vanitygaps-cfacts-6.2.diff](patches/dwm-vanitygaps-cfacts-6.2.diff)
 
    - [windowrolerule](patches/dwm-windowrolerule-6.2.diff)
@@ -176,3 +200,7 @@ Example screenshot:
 Example screenshot with exaggerated gaps:
 
 ![https://github.com/bakkeby/dwm-vanitygaps/wiki/vanitygaps.jpg](https://github.com/bakkeby/dwm-vanitygaps/wiki/vanitygaps.jpg)
+
+Flextile layout with grid stack:
+
+![https://github.com/bakkeby/dwm-vanitygaps/wiki/gridstack.jpg](https://github.com/bakkeby/dwm-vanitygaps/wiki/gridstack.jpg)

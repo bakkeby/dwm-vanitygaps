@@ -16,6 +16,7 @@ static void centeredfloatingmaster(Monitor *m);
 static void deck(Monitor *m);
 static void dwindle(Monitor *m);
 static void fibonacci(Monitor *m, int s);
+static void flextile(Monitor *m);
 static void grid(Monitor *m);
 static void nrowgrid(Monitor *m);
 static void spiral(Monitor *m);
@@ -23,9 +24,23 @@ static void tile(Monitor *m);
 /* Internals */
 static void getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv, unsigned int *nc, float *mf, float *sf);
 static void setgaps(int oh, int ov, int ih, int iv);
+static void setflexsymbols(Monitor *m, unsigned int n);
 
 /* Settings */
 static int enablegaps = 1;
+
+/* Named flextile constants */
+#define LAYOUT 0
+#define MASTER 1
+#define STACK 2
+#define SPLIT_VERTICAL 1   // master stack vertical split
+#define SPLIT_HORIZONTAL 2 // master stack horizontal split
+#define SPLIT_CENTERED_V 3 // centered master vertical split
+#define SPLIT_CENTERED_H 4 // centered master horizontal split
+#define LEFT_TO_RIGHT 1    // clients are stacked horizontally
+#define TOP_TO_BOTTOM 2    // clients are stacked vertically
+#define MONOCLE 3          // clients are stacked in deck / monocle mode
+#define GRID 4             // clients are stacked in grid mode
 
 static void
 setgaps(int oh, int ov, int ih, int iv)
@@ -140,7 +155,7 @@ getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv, unsigned int *nc, float 
 	Client *c;
 
 	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) {
-		if (!m->nmaster || n < m->nmaster)
+		if (m->nmaster && n < m->nmaster)
 			mfacts += c->cfact;
 		else
 			sfacts += c->cfact;
@@ -155,7 +170,7 @@ getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv, unsigned int *nc, float 
 	*iv = m->gappiv*ie; // inner vertical gap
 	*nc = n;            // number of clients
 	*mf = mfacts;       // total factor of master area
-	*sf = sfacts;       // total factor of slave area
+	*sf = sfacts;       // total factor of stack area
 }
 
 /***
@@ -163,7 +178,7 @@ getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv, unsigned int *nc, float 
  */
 
 /*
- * Bottomstack layout + gaps
+ * Bottomstack layout + gaps + cfacts
  * https://dwm.suckless.org/patches/bottomstack/
  */
 static void
@@ -179,21 +194,21 @@ bstack(Monitor *m)
 	if (n == 0)
 		return;
 
-	mx = m->wx + ov;
-	my = m->wy + oh;
-	mh = m->wh - 2*oh;
-	mw = m->ww - 2*ov - iv * (MIN(n, m->nmaster) - 1);
+	sx = mx = m->wx + ov;
+	sy = my = m->wy + oh;
+	sh = mh = m->wh - 2*oh;
+	sw = mw = m->ww - 2*ov - iv * (MIN(n, m->nmaster) - 1);
 
 	if (m->nmaster && n > m->nmaster) {
-		mh = (m->wh - ih) * m->mfact;
-		sx = m->wx + ov;
-		sy = m->wy + mh + ih + oh;
-		sh = m->wh - mh - 2*oh - ih;
+		sh = (mh - ih) * (1 - m->mfact);
+		mh = (mh - ih) * m->mfact;
+		sx = mx;
+		sy = my + mh + ih;
 		sw = m->ww - 2*ov - iv * (n - m->nmaster - 1);
 	}
 
 	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-		if (!m->nmaster || i < m->nmaster) {
+		if (i < m->nmaster) {
 			resize(c, mx, my, mw * (c->cfact / mfacts) - (2*c->bw), mh - (2*c->bw), 0);
 			mx += WIDTH(c) + iv;
 		} else {
@@ -216,21 +231,22 @@ bstackhoriz(Monitor *m)
 	if (n == 0)
 		return;
 
-	mx = m->wx + ov;
-	my = m->wy + oh;
-	mh = m->wh - 2*oh;
-	mw = m->ww - 2*ov - iv * (MIN(n, m->nmaster) - 1);
+	sx = mx = m->wx + ov;
+	sy = my = m->wy + oh;
+	sh = mh = m->wh - 2*oh;
+	sw = mw = m->ww - 2*ov - iv * (MIN(n, m->nmaster) - 1);
 
 	if (m->nmaster && n > m->nmaster) {
-		mh = (m->wh - ih) * m->mfact;
-		sx = m->wx + ov;
-		sy = m->wy + mh + ih + oh;
+		sh = (mh - ih) * (1 - m->mfact);
+		mh = (mh - ih) * m->mfact;
+		sx = mx;
+		sy = my + mh + ih;
 		sh = m->wh - mh - 2*oh - ih * (n - m->nmaster);
 		sw = m->ww - 2*ov;
 	}
 
 	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-		if (!m->nmaster || i < m->nmaster) {
+		if (i < m->nmaster) {
 			resize(c, mx, my, mw * (c->cfact / mfacts) - (2*c->bw), mh - (2*c->bw), 0);
 			mx += WIDTH(c) + iv;
 		} else {
@@ -241,7 +257,7 @@ bstackhoriz(Monitor *m)
 }
 
 /*
- * Centred master layout + gaps
+ * Centred master layout + gaps + cfacts
  * https://dwm.suckless.org/patches/centeredmaster/
  */
 void
@@ -265,9 +281,9 @@ centeredmaster(Monitor *m)
 		if (!m->nmaster || n < m->nmaster)
 			mfacts += c->cfact; // total factor of master area
 		else if ((n - m->nmaster) % 2)
-			lfacts += c->cfact; // total factor of left hand slave area
+			lfacts += c->cfact; // total factor of left hand stacke area
 		else
-			rfacts += c->cfact; // total factor of right hand slave area
+			rfacts += c->cfact; // total factor of right hand stack area
 	}
 
 	/* initialize areas */
@@ -332,10 +348,10 @@ centeredfloatingmaster(Monitor *m)
 
 	mivf = 0.8; // master inner vertical gap factor
 
-	mx = m->wx + ov;
-	my = m->wy + oh;
-	mh = m->wh - 2*oh;
-	mw = m->ww - 2*ov - iv*(n - 1);
+	sx = mx = m->wx + ov;
+	sy = my = m->wy + oh;
+	sh = mh = m->wh - 2*oh;
+	sw = mw = m->ww - 2*ov - iv*(n - 1);
 
 	if (m->nmaster && n > m->nmaster) {
 		/* go mfact box in the center if more than nmaster clients */
@@ -356,7 +372,7 @@ centeredfloatingmaster(Monitor *m)
 	}
 
 	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
-		if (!m->nmaster || i < m->nmaster) {
+		if (i < m->nmaster) {
 			/* nmaster clients are stacked horizontally, in the center of the screen */
 			resize(c, mx, my, mw * (c->cfact / mfacts) - (2*c->bw), mh - (2*c->bw), 0);
 			mx += WIDTH(c) + iv*mivf;
@@ -371,7 +387,7 @@ centeredfloatingmaster(Monitor *m)
 }
 
 /*
- * Deck layout + gaps
+ * Deck layout + gaps + cfacts
  * https://dwm.suckless.org/patches/deck/
  */
 static void
@@ -389,10 +405,10 @@ deck(Monitor *m)
 	if (n == 0)
 		return;
 
-	mx = m->wx + ov;
-	my = m->wy + oh;
-	mh = m->wh - 2*oh - ih * (MIN(n, m->nmaster) - 1);
-	mw = m->ww - 2*ov;
+	sx = mx = m->wx + ov;
+	sy = my = m->wy + oh;
+	sh = mh = m->wh - 2*oh - ih * (MIN(n, m->nmaster) - 1);
+	sw = mw = m->ww - 2*ov;
 
 	if (m->nmaster && n > m->nmaster) {
 		sw = (mw - iv) * (1 - m->mfact);
@@ -406,7 +422,7 @@ deck(Monitor *m)
 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "D %d", n - m->nmaster);
 
 	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
-		if (!m->nmaster || i < m->nmaster) {
+		if (i < m->nmaster) {
 			resize(c, mx, my, mw - (2*c->bw), mh * (c->cfact / mfacts) - (2*c->bw), 0);
 			my += HEIGHT(c) + ih;
 		} else {
@@ -421,7 +437,8 @@ deck(Monitor *m)
 static void
 fibonacci(Monitor *m, int s)
 {
-	unsigned int i, n, nx, ny, nw, nh;
+	unsigned int i, n;
+	int nx, ny, nw, nh;
 	int oh, ov, ih, iv;
 	float mfacts, sfacts;
 	Client *c;
@@ -468,13 +485,14 @@ fibonacci(Monitor *m, int s)
 			}
 			if (i == 0)	{
 				if (n != 1)
-					nw = (m->ww - iv) * m->mfact;
+					nw = (m->ww - 2*ov - iv) * m->mfact;
 				ny = m->wy + oh;
 			}
 			else if (i == 1)
 				nw = m->ww - nw - iv - 2*ov;
 			i++;
 		}
+
 		resize(c, nx, ny, nw - (2*c->bw), nh - (2*c->bw), False);
 	}
 }
@@ -489,6 +507,266 @@ static void
 spiral(Monitor *m)
 {
 	fibonacci(m, 0);
+}
+
+/* Flextile layout + gaps + cfacts + grid
+ * https://dwm.suckless.org/patches/flextile/
+ */
+static void
+flextile(Monitor *m) {
+	unsigned int i, n, nc = 0, sc = 0, lt, cn = 0, rn = 0, cc = 0; // counters
+	int cols = 1, rows = 1;
+	int x, y, h, w;     // master x, y, height, width
+	int sx, sy, sh, sw; // stack x, y, height, width
+	int ox, oy;         // other stack x, y (centered layout)
+	int oh, ov, ih, iv; // gaps outer/inner horizontal/vertical
+
+	float facts, sfacts, ofacts;
+	Client *c;
+
+	getgaps(m, &oh, &ov, &ih, &iv, &n, &facts, &sfacts);
+	setflexsymbols(m, n);
+
+	if (n == 0)
+		return;
+
+	/* No outer gap if full screen monocle */
+	if ((!m->nmaster && m->ltaxis[STACK] == MONOCLE) || (n <= m->nmaster && m->ltaxis[MASTER] == MONOCLE)) {
+		ox = sx = x = m->wx;
+		oy = sy = y = m->wy;
+		sh = h = m->wh;
+		sw = w = m->ww;
+	} else {
+		ox = sx = x = m->wx + ov;
+		oy = sy = y = m->wy + oh;
+		sh = h = m->wh - 2*oh;
+		sw = w = m->ww - 2*ov;
+	}
+	ofacts = sfacts;
+	sc = n - m->nmaster;
+
+
+	/* Split master into master + stack if we have enough clients */
+	if (m->nmaster && n > m->nmaster) {
+		if (abs(m->ltaxis[LAYOUT]) == SPLIT_VERTICAL
+				|| (abs(m->ltaxis[LAYOUT]) == SPLIT_CENTERED_V && n == m->nmaster + 1)) {
+			sw = (w - iv) * (1 - m->mfact);
+			w = (w - iv) * m->mfact;
+			if (m->ltaxis[LAYOUT] < 0) // mirror
+				x = sx + sw + iv;
+			else
+				sx = x + w + iv;
+		} else if (abs(m->ltaxis[LAYOUT]) == SPLIT_HORIZONTAL
+				|| (abs(m->ltaxis[LAYOUT]) == SPLIT_CENTERED_H && n == m->nmaster + 1)) {
+			sh = (h - ih) * (1 - m->mfact);
+			h = (h - ih) * m->mfact;
+			if (m->ltaxis[LAYOUT] < 0) // mirror
+				y = sy + sh + ih;
+			else
+				sy = y + h + ih;
+		} else if (abs(m->ltaxis[LAYOUT]) == SPLIT_CENTERED_V) {
+			sw = (w - 2*iv) * (1 - m->mfact) / 2;
+			w = (w - 2*iv) * m->mfact;
+			x = sx + sw + iv;
+			if (m->ltaxis[LAYOUT] < 0) // mirror
+				ox = x + w + iv;
+			else
+				sx = x + w + iv;
+		} else if (abs(m->ltaxis[LAYOUT]) == SPLIT_CENTERED_H) {
+			sh = (h - 2*ih) * (1 - m->mfact) / 2;
+			h = (h - 2*ih) * m->mfact;
+			y = sy + sh + ih;
+			if (m->ltaxis[LAYOUT] < 0) // mirror
+				oy = y + h + ih;
+			else
+				sy = y + h + ih;
+		}
+
+		if (abs(m->ltaxis[LAYOUT]) == SPLIT_CENTERED_V || abs(m->ltaxis[LAYOUT]) == SPLIT_CENTERED_H) {
+			sc = (n - m->nmaster) / 2 + ((n - m->nmaster) % 2 > 0 ? 1 : 0);
+			facts = sfacts = ofacts = 0;
+			for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+				if (i < m->nmaster)
+					facts += c->cfact; // total factor of master area
+				else if (sc && i < m->nmaster + sc)
+					sfacts += c->cfact; // total factor of first stack area
+				else
+					ofacts += c->cfact; // total factor of second stack area
+			}
+		}
+	}
+
+	for (i = 0, lt = MASTER, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+		if (i == 0 || (m->nmaster && i == m->nmaster) || i == (m->nmaster + sc)) {
+			nc = MIN(n, m->nmaster);
+			if (!m->nmaster || i == m->nmaster) { // switch to stack area
+				x = sx, y = sy, h = sh, w = sw, facts = sfacts, lt = STACK;
+				nc = sc;
+			} else if (i > 0 && i == (m->nmaster + sc)) { // switch to second stack area
+				x = ox, y = oy, h = sh, w = sw, nc = n - i, facts = ofacts;
+			}
+
+			if (m->ltaxis[lt] == LEFT_TO_RIGHT)
+				w -= iv * (nc - 1);
+			else if (m->ltaxis[lt] == TOP_TO_BOTTOM)
+				h -= ih * (nc - 1);
+			else if (m->ltaxis[lt] == GRID) {
+				/* grid dimensions */
+				for (cols = 1; cols <= nc/2; cols++)
+					if (cols*cols >= nc)
+						break;
+				if (nc == 5) /* set layout against the general calculation: not 1:2:2, but 2:3 */
+					cols = 2;
+				rows = nc/cols;
+				cn = rn = cc = 0; // reset cell no, row no, client count
+			}
+		}
+
+		if (m->ltaxis[lt] == LEFT_TO_RIGHT) {
+			resize(c, x, y, w * (c->cfact / facts) - (2*c->bw), h - (2*c->bw), 0);
+			x = x + WIDTH(c) + iv;
+		} else if (m->ltaxis[lt] == TOP_TO_BOTTOM) {
+			resize(c, x, y, w - (2*c->bw), h * (c->cfact / facts) - (2*c->bw), 0);
+			y = y + HEIGHT(c) + ih;
+		} else if (m->ltaxis[lt] == MONOCLE) {
+			resize(c, x, y, w - (2*c->bw), h - (2*c->bw), 0);
+		} else if (m->ltaxis[lt] == GRID) {
+			if (cc/rows + 1 > cols - nc%cols)
+				rows = nc/cols + 1;
+			resize(c,
+				x + cn*((w - iv*(cols - 1)) / cols + iv),
+				y + rn*((h - ih*(rows - 1)) / rows + ih),
+				(w - iv*(cols - 1)) / cols,
+				(h - ih*(rows - 1)) / rows,
+				0);
+			rn++;
+			cc++;
+			if (rn >= rows) {
+				rn = 0;
+				cn++;
+			}
+		}
+	}
+}
+
+
+static void
+setflexsymbols(Monitor *m, unsigned int n) {
+	char sym1 = 61, sym2 = 93, sym3 = 61, sym = 0;
+
+	/* Predefined layouts */
+	/* bstack */
+	if (abs(m->ltaxis[LAYOUT]) == SPLIT_HORIZONTAL && m->ltaxis[MASTER] == LEFT_TO_RIGHT && m->ltaxis[STACK] == LEFT_TO_RIGHT) {
+		snprintf(m->ltsymbol, sizeof m->ltsymbol, (m->ltaxis[LAYOUT] < 0 ? "⚍⚍⚍" : "⚎⚎⚎"));
+		return;
+	}
+
+	/* bstackhoriz */
+	if (abs(m->ltaxis[LAYOUT]) == SPLIT_HORIZONTAL && m->ltaxis[MASTER] == LEFT_TO_RIGHT && m->ltaxis[STACK] == TOP_TO_BOTTOM) {
+		snprintf(m->ltsymbol, sizeof m->ltsymbol, (m->ltaxis[LAYOUT] < 0 ? "☳☳☳" : "☶☶☶"));
+		return;
+	}
+
+	/* centered master horizontal split */
+	if (abs(m->ltaxis[LAYOUT]) == SPLIT_CENTERED_H && m->ltaxis[MASTER] == TOP_TO_BOTTOM && m->ltaxis[STACK] == TOP_TO_BOTTOM) {
+		snprintf(m->ltsymbol, sizeof m->ltsymbol, "☰☰☰");
+		return;
+	}
+
+	if (abs(m->ltaxis[LAYOUT]) == SPLIT_CENTERED_H && m->ltaxis[MASTER] == LEFT_TO_RIGHT && m->ltaxis[STACK] == LEFT_TO_RIGHT) {
+		snprintf(m->ltsymbol, sizeof m->ltsymbol, "☵☵☵");
+		return;
+	}
+
+	/* monocle */
+	if (n <= 1 && ((!m->nmaster && m->ltaxis[STACK] == MONOCLE) || (n <= m->nmaster && m->ltaxis[MASTER] == MONOCLE))) {
+		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[M]");
+		return;
+	}
+
+	/* Layout symbols */
+	if (abs(m->ltaxis[LAYOUT]) == SPLIT_VERTICAL) {
+		if (m->nmaster > 1 || m->ltaxis[MASTER] == MONOCLE)
+			sym2 = 124; // |
+		else if (m->ltaxis[LAYOUT] < 0)
+			sym2 = 91; // [
+		else
+			sym2 = 93; // ]
+	} else if (abs(m->ltaxis[LAYOUT]) == SPLIT_HORIZONTAL) {
+		if (m->nmaster > 1 || m->ltaxis[MASTER] == MONOCLE)
+			sym2 = 58; // :
+		else if (m->ltaxis[LAYOUT] < 0)
+			sym2 = 91; // [
+		else
+			sym2 = 93; // ]
+	} else if (abs(m->ltaxis[LAYOUT]) == SPLIT_CENTERED_V) {
+		if (m->ltaxis[LAYOUT] < 0)
+			sym2 = 87; // W
+		else
+			sym2 = 77; // M
+	} else if (abs(m->ltaxis[LAYOUT]) == SPLIT_CENTERED_H) {
+		if (m->ltaxis[LAYOUT] < 0)
+			sym2 = 87; // W
+		else
+			sym2 = 77; // M
+	}
+
+	if (m->ltaxis[MASTER] == LEFT_TO_RIGHT)
+		sym1 = 124; // | ⏸
+	else if (m->ltaxis[MASTER] == TOP_TO_BOTTOM)
+		sym1 = 61; // =
+	else if (m->ltaxis[MASTER] == MONOCLE)
+		sym1 = MIN(n, m->nmaster);
+	else if (m->ltaxis[MASTER] == GRID)
+		sym1 = 35; // #
+
+	if (m->ltaxis[STACK] == LEFT_TO_RIGHT)
+		sym3 = 124; // |
+	else if (m->ltaxis[STACK] == TOP_TO_BOTTOM)
+		sym3 = 61; // =
+	else if (m->ltaxis[STACK] == MONOCLE)
+		sym3 = n - m->nmaster;
+	else if (m->ltaxis[STACK] == GRID)
+		sym3 = 35; // #
+
+
+	/* Generic symbols */
+	if (!m->nmaster) {
+		if (m->ltaxis[STACK] == MONOCLE) {
+			snprintf(m->ltsymbol, sizeof m->ltsymbol, "%c%d%c", 91, sym3, 93);
+		} else {
+			snprintf(m->ltsymbol, sizeof m->ltsymbol, "%c%c%c", sym3, sym3, sym3);
+		}
+		return;
+	}
+
+	if (n <= m->nmaster) {
+		if (m->ltaxis[MASTER] == MONOCLE) {
+			snprintf(m->ltsymbol, sizeof m->ltsymbol, "%c%d%c", 91, sym1, 93);
+		} else {
+			snprintf(m->ltsymbol, sizeof m->ltsymbol, "%c%c%c", 91, sym1, 93);
+		}
+	} else {
+		if (m->ltaxis[LAYOUT] < 0) {
+			sym = sym1;
+			sym1 = sym3;
+			sym3 = sym;
+		}
+		if (m->nmaster == 1 && abs(m->ltaxis[LAYOUT]) <= SPLIT_HORIZONTAL && m->ltaxis[MASTER] != MONOCLE) {
+			if (m->ltaxis[LAYOUT] > 0)
+				sym1 = 91;
+			else
+				sym3 = 93;
+		}
+		if (m->ltaxis[MASTER] == MONOCLE && m->ltaxis[STACK] == MONOCLE)
+			snprintf(m->ltsymbol, sizeof m->ltsymbol, "%d%c%d", sym1, sym2, sym3);
+		else if ((m->nmaster && m->ltaxis[MASTER] == MONOCLE && m->ltaxis[LAYOUT] > 0) || (m->ltaxis[STACK] == MONOCLE && m->ltaxis[LAYOUT] < 0))
+			snprintf(m->ltsymbol, sizeof m->ltsymbol, "%d%c%c", sym1, sym2, sym3);
+		else if ((m->ltaxis[STACK] == MONOCLE && m->ltaxis[LAYOUT] > 0) || (m->nmaster && m->ltaxis[MASTER] == MONOCLE && m->ltaxis[LAYOUT] < 0))
+			snprintf(m->ltsymbol, sizeof m->ltsymbol, "%c%c%d", sym1, sym2, n - m->nmaster);
+		else
+			snprintf(m->ltsymbol, sizeof m->ltsymbol, "%c%c%c", sym1, sym2, sym3);
+	}
 }
 
 /*
@@ -677,7 +955,7 @@ nrowgrid(Monitor *m)
 }
 
 /*
- * Default tile layout + gaps
+ * Default tile layout + gaps + cfacts
  */
 static void
 tile(Monitor *m)
@@ -694,10 +972,10 @@ tile(Monitor *m)
 	if (n == 0)
 		return;
 
-	mx = m->wx + ov;
-	my = m->wy + oh;
-	mh = m->wh - 2*oh - ih * (MIN(n, m->nmaster) - 1);
-	mw = m->ww - 2*ov;
+	sx = mx = m->wx + ov;
+	sy = my = m->wy + oh;
+	sh = mh = m->wh - 2*oh - ih * (MIN(n, m->nmaster) - 1);
+	sw = mw = m->ww - 2*ov;
 
 	if (m->nmaster && n > m->nmaster) {
 		sw = (mw - iv) * (1 - m->mfact);
@@ -708,7 +986,7 @@ tile(Monitor *m)
 	}
 
 	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
-		if (!m->nmaster || i < m->nmaster) {
+		if (i < m->nmaster) {
 			resize(c, mx, my, mw - (2*c->bw), mh * (c->cfact / mfacts) - (2*c->bw), 0);
 			my += HEIGHT(c) + ih;
 		} else {

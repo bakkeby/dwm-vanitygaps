@@ -138,8 +138,11 @@ typedef struct Pertag Pertag;
 struct Monitor {
 	char ltsymbol[16];
 	float mfact;
+	int ltaxis[3];
 	int nmaster;
 	int num;
+	int curtag;
+	int prevtag;
 	int by;               /* bar geometry */
 	int mx, my, mw, mh;   /* screen size */
 	int wx, wy, ww, wh;   /* window area  */
@@ -225,6 +228,7 @@ static void killclient(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
+static void mirrorlayout(const Arg *arg);
 static void monocle(Monitor *m);
 static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
@@ -240,6 +244,7 @@ static void resizemouse(const Arg *arg);
 static void removesystrayicon(Client *i);
 static void resizerequest(XEvent *e);
 static void restack(Monitor *m);
+static void rotatelayoutaxis(const Arg *arg);
 static void rotatestack(const Arg *arg);
 static void run(void);
 static void runAutostart(void);
@@ -250,6 +255,7 @@ static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
+static void setflexlayout(const Arg *arg);
 static void setlayout(const Arg *arg);
 static void setcfact(const Arg *arg);
 static void setmfact(const Arg *arg);
@@ -344,6 +350,7 @@ static Colormap cmap;
 struct Pertag {
 	unsigned int curtag, prevtag; /* current and previous tag */
 	int nmasters[LENGTH(tags) + 1]; /* number of windows in master area */
+	int ltaxes[LENGTH(tags) + 1][3];
 	float mfacts[LENGTH(tags) + 1]; /* mfacts per tag */
 	unsigned int sellts[LENGTH(tags) + 1]; /* selected layouts */
 	const Layout *ltidxs[LENGTH(tags) + 1][2]; /* matrix of tags and layouts indexes  */
@@ -860,12 +867,17 @@ createmon(void)
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
 	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
+	m->ltaxis[0] = layoutaxis[0];
+	m->ltaxis[1] = layoutaxis[1];
+	m->ltaxis[2] = layoutaxis[2];
+	/* init tags, bars, layouts, axes, nmaster and mfacts */
+	m->curtag = m->prevtag = 1;
 
 	if (pertag) {
 		if (!(m->pertag = (Pertag *)calloc(1, sizeof(Pertag))))
 			die("fatal: could not malloc() %u bytes\n", sizeof(Pertag));
 		m->pertag->curtag = m->pertag->prevtag = 1;
-		for(i=0; i <= LENGTH(tags); i++) {
+		for (i=0; i <= LENGTH(tags); i++) {
 			/* init nmaster */
 			m->pertag->nmasters[i] = m->nmaster;
 
@@ -876,6 +888,11 @@ createmon(void)
 			m->pertag->ltidxs[i][0] = m->lt[0];
 			m->pertag->ltidxs[i][1] = m->lt[1];
 			m->pertag->sellts[i] = m->sellt;
+
+			/* init flextile axes */
+			m->pertag->ltaxes[i][0] = m->ltaxis[0];
+			m->pertag->ltaxes[i][1] = m->ltaxis[1];
+			m->pertag->ltaxes[i][2] = m->ltaxis[2];
 
 			if (pertagbar) {
 				/* init showbar */
@@ -1486,6 +1503,17 @@ maprequest(XEvent *e)
 		manage(ev->window, &wa);
 }
 
+/* Mirror layout axis for flextile */
+void
+mirrorlayout(const Arg *arg) {
+	if (!selmon->lt[selmon->sellt]->arrange)
+		return;
+	selmon->ltaxis[0] *= -1;
+	if (pertag)
+		selmon->pertag->ltaxes[selmon->pertag->curtag][0] = selmon->ltaxis[0];
+	arrange(selmon);
+}
+
 void
 monocle(Monitor *m)
 {
@@ -1831,6 +1859,23 @@ restack(Monitor *m)
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 }
 
+/* Rotate layout axis for flextile */
+void
+rotatelayoutaxis(const Arg *arg) {
+	if (!selmon->lt[selmon->sellt]->arrange)
+		return;
+	if (arg->i == 0) {
+		if (selmon->ltaxis[0] > 0)
+			selmon->ltaxis[0] = selmon->ltaxis[0] + 1 > 4 ? 1 : selmon->ltaxis[0] + 1;
+		else
+			selmon->ltaxis[0] = selmon->ltaxis[0] - 1 < -4 ? -1 : selmon->ltaxis[0] - 1;
+	} else
+		selmon->ltaxis[arg->i] = selmon->ltaxis[arg->i] + 1 > 4 ? 1 : selmon->ltaxis[arg->i] + 1;
+	if (pertag)
+		selmon->pertag->ltaxes[selmon->pertag->curtag][arg->i] = selmon->ltaxis[arg->i];
+	arrange(selmon);
+}
+
 void
 rotatestack(const Arg *arg)
 {
@@ -2063,6 +2108,63 @@ setlayout(const Arg *arg)
 		arrange(selmon);
 	else
 		drawbar(selmon);
+}
+
+/*
+ * Set predefined flextile layout.
+ *
+ * The arg int value is a binary representation of the setup where certain bits have different
+ * meanings, similar to how Linux permissions work.
+ *
+ * The first two bits represents the stack axis, bits 3 and 4 the master axis. Bits 5 and 6
+ * are used to control the layout while bit 7 indicates whether or not the layout is mirrored.
+ * The 8th bit is reserved while bit 9 through 12 control nmaster with up to 15 clients in the
+ * master stack.
+ *
+ * Bitwise layout:
+ *
+ *    0000          (nmaster: 0-15 = clients in master stack)
+ *        0         (reserved)
+ *         0        (orientation: 0 = normal, 1 = mirror)
+ *          00      (layout: 00 = vertical, 01 = horizontal, 10 = centered (vert), 11 = centered (horz))
+ *            00    (master axis: 00 = left to right, 01 = top to bottom, 10 = monocle, 11 = grid)
+ *              00  (stack axis:  00 = left to right, 01 = top to bottom, 10 = monocle, 11 = grid)
+ *
+ * Examples:
+ *    binary         int  layout
+ *    --------------------------
+ *    000000000110     6  monocle
+ *    000100000110   262  deck layout
+ *    000100010000   272  bstack layout
+ *    000100010001   273  bstackhoriz layout
+ *    000000000111     7  grid layout
+ *    000100000101   261  default tile layout
+ *    000100100101   293  centered master
+ *    000100000111   263  default tile layout with grid stack
+ */
+void
+setflexlayout(const Arg *arg)
+{
+	int i;
+
+	/* Find flextile layout */
+	for (i = 0; i < LENGTH(layouts); i++)
+		if (layouts[i].arrange == flextile)
+			break;
+
+	selmon->nmaster = ((arg->i & 0x0F00) >> 8);
+	selmon->ltaxis[0] = (1 + ((arg->i & 0x30) >> 4)) * (arg->i & 0x40 ? -1 : 1);
+	selmon->ltaxis[1] = 1 + ((arg->i & 0xC) >> 2);
+	selmon->ltaxis[2] = 1 + (arg->i & 0x3);
+
+	if (pertag) {
+		selmon->pertag->nmasters[selmon->pertag->curtag] = selmon->nmaster;
+		selmon->pertag->ltaxes[selmon->pertag->curtag][0] = selmon->ltaxis[0];
+		selmon->pertag->ltaxes[selmon->pertag->curtag][1] = selmon->ltaxis[1];
+		selmon->pertag->ltaxes[selmon->pertag->curtag][2] = selmon->ltaxis[2];
+	}
+
+	setlayout(&((Arg) { .v = &layouts[i] }));
 }
 
 void
@@ -2947,10 +3049,14 @@ view(const Arg *arg)
 		selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
 		selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 		selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
+		selmon->ltaxis[0] = selmon->pertag->ltaxes[selmon->pertag->curtag][0];
+		selmon->ltaxis[1] = selmon->pertag->ltaxes[selmon->pertag->curtag][1];
+		selmon->ltaxis[2] = selmon->pertag->ltaxes[selmon->pertag->curtag][2];
 		if (pertagbar && selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag])
 			togglebar(NULL);
 	} else if (arg->ui & TAGMASK)
 		selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
+
 	focus(NULL);
 	arrange(selmon);
 }

@@ -63,11 +63,20 @@ static const Rule rules[] = {
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
+
 #include "vanitygaps.c"
+#include "flextile.c"
+
+static const int layoutaxis[] = {
+	1,    /* layout axis: 1 = x, 2 = y; negative values mirror the layout, setting the master area to the right / bottom instead of left / top */
+	2,    /* master axis: 1 = x (from left to right), 2 = y (from top to bottom), 3 = z (monocle) */
+	2,    /* stack axis:  1 = x (from left to right), 2 = y (from top to bottom), 3 = z (monocle) */
+};
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
+	{ "[]=",      flextile }, /* first entry is default */
+	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
 	{ "[@]",      spiral },
 	{ "[\\]",     dwindle },
@@ -80,7 +89,7 @@ static const Layout layouts[] = {
 	{ ":::",      gaplessgrid },
 	{ "|M|",      centeredmaster },
 	{ ">M>",      centeredfloatingmaster },
-	{ "><>",      NULL },    /* no layout function means floating behavior */
+	{ "[]=",      tile },
 	{ NULL,       NULL },
 };
 
@@ -138,6 +147,13 @@ static Key keys[] = {
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY|ControlMask,           XK_w,      setflexlayout,  {.i = 262 } }, // deck layout
+	{ MODKEY|ControlMask,           XK_e,      setflexlayout,  {.i = 272 } }, // bstack layout
+	{ MODKEY|ControlMask,           XK_r,      setflexlayout,  {.i = 273 } }, // bstackhoriz layout
+	{ MODKEY|ControlMask,           XK_s,      setflexlayout,  {.i =   6 } }, // monocle
+	{ MODKEY|ControlMask,           XK_d,      setflexlayout,  {.i =   7 } }, // grid
+	{ MODKEY|ControlMask,           XK_f,      setflexlayout,  {.i = 261 } }, // default tile (also default)
+	{ MODKEY|ControlMask,           XK_g,      setflexlayout,  {.i = 293 } }, // centered master
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_y,      togglefullscreen, {0} },
@@ -163,6 +179,10 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+	{ MODKEY|ControlMask,           XK_t,      rotatelayoutaxis, {.i = 0} },    /* flextile, 0 = layout axis */
+	{ MODKEY|ControlMask,           XK_Tab,    rotatelayoutaxis, {.i = 1} },    /* flextile, 1 = master axis */
+	{ MODKEY|ControlMask|ShiftMask, XK_Tab,    rotatelayoutaxis, {.i = 2} },    /* flextile, 2 = stack axis */
+	{ MODKEY|ControlMask,           XK_Return, mirrorlayout,     {0} },         /* flextile, flip master and stack areas */
 };
 
 /* button definitions */
