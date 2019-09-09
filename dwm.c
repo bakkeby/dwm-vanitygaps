@@ -141,8 +141,6 @@ struct Monitor {
 	int ltaxis[3];
 	int nmaster;
 	int num;
-	int curtag;
-	int prevtag;
 	int by;               /* bar geometry */
 	int mx, my, mw, mh;   /* screen size */
 	int wx, wy, ww, wh;   /* window area  */
@@ -871,7 +869,6 @@ createmon(void)
 	m->ltaxis[1] = layoutaxis[1];
 	m->ltaxis[2] = layoutaxis[2];
 	/* init tags, bars, layouts, axes, nmaster and mfacts */
-	m->curtag = m->prevtag = 1;
 
 	if (pertag) {
 		if (!(m->pertag = (Pertag *)calloc(1, sizeof(Pertag))))

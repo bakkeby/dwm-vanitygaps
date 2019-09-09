@@ -46,7 +46,7 @@ Patches included:
       - refer to [https://dwm.suckless.org/patches/cfacts/](https://dwm.suckless.org/patches/cfacts/)
 
    - [cyclelayouts](patches/dwm-cyclelayouts-6.2.diff)
-      - let's you cycle through all your layouts
+      - lets you cycle through all your layouts
       - useful for demo purposes
       - refer to [https://dwm.suckless.org/patches/cyclelayouts/](https://dwm.suckless.org/patches/cyclelayouts/)
 
@@ -74,7 +74,7 @@ Patches included:
          - bstack
          - bstackhoriz
          - gapplessgrid
-      - I added this expanded version of flextile as [dwm-flextile-pertag-cfacts-vanitygaps-grid-centered-6.2.diff](dwm-flextile-pertag-cfacts-vanitygaps-grid-centered-6.2.diff)
+      - I added this expanded version of flextile as [dwm-flextile-pertag-cfacts-vanitygaps-grid-centered-6.2.diff](patches/dwm-flextile-pertag-cfacts-vanitygaps-grid-centered-6.2.diff)
       - refer to [https://dwm.suckless.org/patches/flextile/](https://dwm.suckless.org/patches/flextile/)
 
    - [focusonnetactive](patches/dwm-focusonnetactive-6.2.diff)
