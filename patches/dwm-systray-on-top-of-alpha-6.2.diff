@@ -275,7 +275,25 @@ index 20f8309..013622f 100644
  }
  
  void
-@@ -784,8 +878,11 @@ expose(XEvent *e)
+@@ -755,8 +849,17 @@ drawbars(void)
+ {
+ 	Monitor *m;
+ 
++	if (showsystray) {
++		/* Clear status bar to avoid artifacts beneath systray icons */
++		drw_rect(drw, 0, 0, selmon->ww, bh, 1, 1);
++		drw_map(drw, selmon->barwin, 0, 0, selmon->ww, bh);
++	}
++
+ 	for (m = mons; m; m = m->next)
+ 		drawbar(m);
++
++	if (showsystray)
++		updatesystray();
+ }
+ 
+ void
+@@ -784,8 +887,11 @@ expose(XEvent *e)
  	Monitor *m;
  	XExposeEvent *ev = &e->xexpose;
  
@@ -285,24 +303,6 @@ index 20f8309..013622f 100644
 +		if (showsystray && m == selmon)
 +			updatesystray();
 +	}
- }
- 
- void
-@@ -819,8 +916,17 @@ focusin(XEvent *e)
- {
- 	XFocusChangeEvent *ev = &e->xfocus;
- 
-+	if (showsystray) {
-+		/* Clear status bar to avoid artifacts beneath systray icons */
-+		drw_rect(drw, 0, 0, selmon->ww, bh, 1, 1);
-+		drw_map(drw, selmon->barwin, 0, 0, selmon->ww, bh);
-+	}
-+
- 	if (selmon->sel && ev->window != selmon->sel->win)
- 		setfocus(selmon->sel);
-+
-+	if (showsystray)
-+		updatesystray();
  }
  
  void
