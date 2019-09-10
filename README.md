@@ -74,6 +74,7 @@ Patches included:
          - bstack
          - bstackhoriz
          - gapplessgrid
+         - columns (col)
       - I added this expanded version of flextile as [dwm-flextile-pertag-cfacts-vanitygaps-grid-centered-6.2.diff](patches/dwm-flextile-pertag-cfacts-vanitygaps-grid-centered-6.2.diff)
       - refer to [https://dwm.suckless.org/patches/flextile/](https://dwm.suckless.org/patches/flextile/)
 

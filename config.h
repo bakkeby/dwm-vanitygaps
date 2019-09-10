@@ -165,10 +165,12 @@ static Key keys[] = {
 	{ MODKEY,                       XK_w,      setflexlayout,     {.i = 293 } }, // centered master
 	{ MODKEY,                       XK_e,      setflexlayout,     {.i = 273 } }, // bstackhoriz layout
 	{ MODKEY,                       XK_r,      setflexlayout,     {.i = 272 } }, // bstack layout
-	{ MODKEY,                       XK_t,      setflexlayout,     {.i = 263 } }, // tile + grid layout
+	{ MODKEY,                       XK_t,      setflexlayout,     {.i = 261 } }, // default tile layout
+	{ MODKEY,                       XK_g,      setflexlayout,     {.i = 263 } }, // tile + grid layout
 	{ MODKEY|ControlMask,           XK_w,      setflexlayout,     {.i =   7 } }, // grid
 	{ MODKEY|ControlMask,           XK_e,      setflexlayout,     {.i = 262 } }, // deck layout
 	{ MODKEY|ControlMask,           XK_r,      setflexlayout,     {.i =   6 } }, // monocle
+	{ MODKEY|ControlMask,           XK_g,      setflexlayout,     {.i = 257 } }, // columns (col) layout
 	{ MODKEY,                       XK_space,  setlayout,         {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating,    {0} },
 	{ MODKEY,                       XK_f,      togglefullscreen,  {0} },
