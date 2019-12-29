@@ -86,7 +86,7 @@ index 4465af1..cd0a2b8 100644
 +				x += tw;
 +				w -= tw;
 +			}
-+ 		}
++		}
 +		drw_setscheme(drw, scheme[SchemeNorm]);
 +		drw_rect(drw, x, 0, w, bh, 1, 1);
  	}

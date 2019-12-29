@@ -577,7 +577,7 @@ index 0000000..860100a
 +
 +	if (n == 0)
 +		return;
-+	
++
 +	nx = m->wx + ov;
 +	ny = oh;
 +	nw = m->ww - 2*ov;
