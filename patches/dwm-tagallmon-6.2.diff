@@ -1,12 +1,12 @@
-From 2051d960a0f414a70b0c9b6ec37005b554df0e45 Mon Sep 17 00:00:00 2001
+From 4619643a2630c98deb726b93a0d3be92db6e5d8d Mon Sep 17 00:00:00 2001
 From: Stein Bakkeby <bakkeby@gmail.com>
 Date: Sun, 19 May 2019 22:51:50 +0200
 Subject: [PATCH] tagallmon, move all visible windows to an adjacent monitor
 
 ---
  config.def.h |  2 ++
- dwm.c        | 29 +++++++++++++++++++++++++++++
- 2 files changed, 31 insertions(+)
+ dwm.c        | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 35 insertions(+)
 
 diff --git a/config.def.h b/config.def.h
 index 1c0b587..4852ae2 100644
@@ -22,7 +22,7 @@ index 1c0b587..4852ae2 100644
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
 diff --git a/dwm.c b/dwm.c
-index 4465af1..f73d8e3 100644
+index 4465af1..5048970 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -208,6 +208,7 @@ static void sigchld(int unused);
@@ -33,7 +33,7 @@ index 4465af1..f73d8e3 100644
  static void tile(Monitor *);
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
-@@ -1670,6 +1671,34 @@ tagmon(const Arg *arg)
+@@ -1670,6 +1671,38 @@ tagmon(const Arg *arg)
  	sendmon(selmon->sel, dirtomon(arg->i));
  }
  
@@ -73,5 +73,5 @@ index 4465af1..f73d8e3 100644
  tile(Monitor *m)
  {
 -- 
-2.17.1
+2.19.1
 
