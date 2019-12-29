@@ -1,12 +1,12 @@
-From fd1d5a6252edc2a81727b2f771a712b1de2b5860 Mon Sep 17 00:00:00 2001
+From 16ae5c6e95af42f3b39b5d6771215fcddea06c05 Mon Sep 17 00:00:00 2001
 From: bakkeby <bakkeby@gmail.com>
 Date: Sun, 19 May 2019 23:28:34 +0200
 Subject: [PATCH] tagswapmon, swap all visible windows with those of one of the adjacent monitors
 
 ---
  config.def.h |  2 ++
- dwm.c        | 54 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 56 insertions(+)
+ dwm.c        | 62 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 64 insertions(+)
 
 diff --git a/config.def.h b/config.def.h
 index 1c0b587..09331fb 100644
@@ -22,7 +22,7 @@ index 1c0b587..09331fb 100644
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
 diff --git a/dwm.c b/dwm.c
-index 4465af1..9650638 100644
+index 4465af1..862eaf7 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -209,6 +209,7 @@ static void spawn(const Arg *arg);
@@ -33,7 +33,7 @@ index 4465af1..9650638 100644
  static void togglebar(const Arg *arg);
  static void togglefloating(const Arg *arg);
  static void toggletag(const Arg *arg);
-@@ -1670,6 +1671,59 @@ tagmon(const Arg *arg)
+@@ -1670,6 +1671,67 @@ tagmon(const Arg *arg)
  	sendmon(selmon->sel, dirtomon(arg->i));
  }
  
@@ -102,5 +102,5 @@ index 4465af1..9650638 100644
  tile(Monitor *m)
  {
 -- 
-2.17.1
+2.19.1
 
