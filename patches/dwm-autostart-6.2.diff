@@ -1,15 +1,15 @@
-From 1950ce8ed7a2a460d89f8ef4a0ddc9882410ae57 Mon Sep 17 00:00:00 2001
+From 57695156138d96d4e9d4600a80202d3bc48c6400 Mon Sep 17 00:00:00 2001
 From: bakkeby <bakkeby@gmail.com>
 Date: Mon, 1 Jul 2019 00:26:42 +0200
 Subject: [PATCH] Adding autostart patch
 
 Refer to https://dwm.suckless.org/patches/autostart/
 ---
- dwm.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ dwm.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
 diff --git a/dwm.c b/dwm.c
-index 4465af1..5867afb 100644
+index 4465af1..e634dc1 100644
 --- a/dwm.c
 +++ b/dwm.c
 @@ -193,6 +193,7 @@ static void resizeclient(Client *c, int x, int y, int w, int h);
@@ -20,7 +20,7 @@ index 4465af1..5867afb 100644
  static void scan(void);
  static int sendevent(Client *c, Atom proto);
  static void sendmon(Client *c, Monitor *m);
-@@ -1380,6 +1381,22 @@ run(void)
+@@ -1380,6 +1381,17 @@ run(void)
  			handler[ev.type](&ev); /* call handler */
  }
  
@@ -38,7 +38,7 @@ index 4465af1..5867afb 100644
  void
  scan(void)
  {
-@@ -2142,6 +2159,7 @@ main(int argc, char *argv[])
+@@ -2142,6 +2154,7 @@ main(int argc, char *argv[])
  		die("pledge");
  #endif /* __OpenBSD__ */
  	scan();
