@@ -10,11 +10,11 @@ In this build the vast majority of patches that have been applied can be configu
 
 Patches included:
 
-   - [alpha](patches/dwm-alpha-6.2.diff)
+   - [alpha](https://github.com/bakkeby/patches/tree/master/dwm/dwm-alpha-6.2.diff)
       - adds transparency for the status bar
       - refer to [https://dwm.suckless.org/patches/alpha/](https://dwm.suckless.org/patches/alpha/)
 
-   - [attachx](patches/dwm-attachx-6.2.diff)
+   - [attachx](https://github.com/bakkeby/patches/tree/master/dwm/dwm-attachx-6.2.diff)
       - by default any new (non-floating) window you open in dwm becomes the new master and there are several patches that alter this behaviour
       - this patch combines several of these attach modes into one having a configuration option to switch between them
       - this avoids having to hardcode one specific behaviour which means that someone else can take your build and just flip a config setting to change where new windows are placed in the stack
@@ -26,7 +26,7 @@ Patches included:
          - 3 - [attachbelow](https://dwm.suckless.org/patches/attachbelow/): new window is placed below selected client
          - 4 - [attachbottom](https://dwm.suckless.org/patches/attachbottom/): new window is placed at the bottom of the stack
 
-   - [autostart](patches/dwm-autostart-6.2.diff)
+   - [autostart](https://github.com/bakkeby/patches/tree/master/dwm/dwm-autostart-6.2.diff)
       - adds automatic running of `autostart.sh` and `autostart_blocking.sh` on startup
       - be aware that dwm will not start up as long as `autostart_blocking.sh` is running and will stay completely unresponsive until it has finished
       - this version reads the scripts from `~/.config/dwm/` rather than `~/.dwm/` as in the original patch
@@ -34,27 +34,27 @@ Patches included:
       - I added this to avoid certain conflicts when switching between window managers
       - refer to [https://dwm.suckless.org/patches/autostart/](https://dwm.suckless.org/patches/autostart/)
 
-   - [center](patches/dwm-center-6.2.diff)
+   - [center](https://github.com/bakkeby/patches/tree/master/dwm/dwm-center-6.2.diff)
       - adds an _iscentered_ rule to automatically center clients on the current monitor.
       - I added a fix for multi-monitor support (original fix did not take monitor x and y positions into account)
       - I also added automatic centering of floating popups
       - refer to [https://dwm.suckless.org/patches/center/](https://dwm.suckless.org/patches/center/)
 
-   - [cfacts](patches/dwm-cfacts-6.2.diff)
+   - [cfacts](https://github.com/bakkeby/patches/tree/master/dwm/dwm-cfacts-6.2.diff)
       - provides the ability to assign different weights to clients in their respective stack in tiled layout
-      - in my vanitygaps build I also added cfacts support to bottomstack, centeredmaster and deck layouts that can be found in [dwm-vanitygaps-cfacts-6.2.diff](patches/dwm-vanitygaps-cfacts-6.2.diff)
+      - in my vanitygaps build I also added cfacts support to bottomstack, centeredmaster and deck layouts that can be found in [dwm-vanitygaps-cfacts-6.2.diff](https://github.com/bakkeby/patches/tree/master/dwm/dwm-vanitygaps-cfacts-6.2.diff)
       - refer to [https://dwm.suckless.org/patches/cfacts/](https://dwm.suckless.org/patches/cfacts/)
 
-   - [cyclelayouts](patches/dwm-cyclelayouts-6.2.diff)
+   - [cyclelayouts](https://github.com/bakkeby/patches/tree/master/dwm/dwm-cyclelayouts-6.2.diff)
       - lets you cycle through all your layouts
       - useful for demo purposes
       - refer to [https://dwm.suckless.org/patches/cyclelayouts/](https://dwm.suckless.org/patches/cyclelayouts/)
 
-   - [fancybar](patches/dwm-fancybar-6.2.diff)
+   - [fancybar](https://github.com/bakkeby/patches/tree/master/dwm/dwm-fancybar-6.2.diff)
       - shows the titles of all visible windows in the status bar (as opposed to showing just the selected one)
       - refer to [https://dwm.suckless.org/patches/fancybar/](https://dwm.suckless.org/patches/fancybar/)
 
-   - [flextile](patches/dwm-flextile-6.2.diff)
+   - [flextile](https://github.com/bakkeby/patches/tree/master/dwm/dwm-flextile-6.2.diff)
       - flextile is a flexible version of the original tile layout that supports horizontal and vertical split as well as three different stack modes: horizontal, vertical, deck
       - the original patch (referred to above) has been ported to 6.2 as-is and incorporates the pertag, nmaster and bottom stack layouts
       - the 5.8.2 patch has a custom solution for pertag and overrides the Monitor struct, which makes it incompatible with the (now) better implemented pertag patch
@@ -78,45 +78,45 @@ Patches included:
       - I added this expanded version of flextile as [dwm-flextile-pertag-cfacts-vanitygaps-grid-centered-6.2.diff](patches/dwm-flextile-pertag-cfacts-vanitygaps-grid-centered-6.2.diff)
       - refer to [https://dwm.suckless.org/patches/flextile/](https://dwm.suckless.org/patches/flextile/)
 
-   - [focusonnetactive](patches/dwm-focusonnetactive-6.2.diff)
+   - [focusonnetactive](https://github.com/bakkeby/patches/tree/master/dwm/dwm-focusonnetactive-6.2.diff)
       - rather than highlighting a tab as urgent, activate the tab and the urgent window instead
       - I added an ever so small fix for multi-monitor support
       - refer to [https://dwm.suckless.org/patches/focusonnetactive/](https://dwm.suckless.org/patches/focusonnetactive/)
 
-   - [losefullscreen](patches/dwm-losefullscreen-6.2.diff)
+   - [losefullscreen](https://github.com/bakkeby/patches/tree/master/dwm/dwm-losefullscreen-6.2.diff)
       - by default in dwm it is possible to make an application fullscreen, then use the focusstack keybindings to focus on other windows beneath the current window
       - it is also possible to spawn new windows (e.g. a terminal) that end up getting focus while the previous window remains in fullscreen
       - this patch ensures that in such scenarios the previous window loses fullscreen
 
-   - [pertag](patches/dwm-pertag-6.2.diff)
+   - [pertag](https://github.com/bakkeby/patches/tree/master/dwm/dwm-pertag-6.2.diff)
       - the pertag patch keeps layout, mwfact, barpos and nmaster settings per tag, rather than the default behaviour of having everything global across all tags
       - in my build I ended up making using pertag configurable (should one want to disable this functionality)
       - I also ended up integrating the `pertag_without_bar` patch that avoids storing bar configuration on a per tag basis (i.e. whether bar is enabled or not) making it configurable as well
       - should anyone be interested in the configurable version of this patch then I have uploaded it as [dwm-pertag-configurable-6.2.diff](patches/dwm-pertag-configurable-6.2.diff)
       - refer to [https://dwm.suckless.org/patches/pertag/](https://dwm.suckless.org/patches/pertag/)
 
-   - [resizecorners](patches/dwm-resizecorners-6.2.diff)
+   - [resizecorners](https://github.com/bakkeby/patches/tree/master/dwm/dwm-resizecorners-6.2.diff)
       - by default, windows only resize from the bottom right corner
       - with this patch the mouse is warped to the nearest corner and you resize from there
       - refer to [https://dwm.suckless.org/patches/resizecorners/](https://dwm.suckless.org/patches/resizecorners/)
 
-   - [rotatestack](patches/dwm-rotatestack-6.2.diff)
+   - [rotatestack](https://github.com/bakkeby/patches/tree/master/dwm/dwm-rotatestack-6.2.diff)
       - let's you rotate through the stack
       - this is especially convenient when mapped to the mouse scrollwheel
       - refer to [https://dwm.suckless.org/patches/rotatestack/](https://dwm.suckless.org/patches/rotatestack/)
 
-   - [savefloats](patches/dwm-savefloats-6.2.diff)
+   - [savefloats](https://github.com/bakkeby/patches/tree/master/dwm/dwm-savefloats-6.2.diff)
       - saves size and position of every floating window before it is forced into tiled mode
       - if the window is made floating again then the old dimensions will be restored
       - the original savefloats patch worked great when toggling floating <--> tiled in a tiled layout, but the floating window dimensions were not carried over when switching to a floating layout
       - so I ended up adding a patch for this patch to also restore floating window dimensions when going into floating layout mode and I uploaded this as [dwm-savefloats-configurable-6.2.diff](patches/dwm-savefloats-configurable-6.2.diff)
       - refer to [https://dwm.suckless.org/patches/save_floats/](https://dwm.suckless.org/patches/save_floats/)
 
-   - [statuspadding](patches/dwm-statuspadding-6.2.diff)
+   - [statuspadding](https://github.com/bakkeby/patches/tree/master/dwm/dwm-statuspadding-6.2.diff)
       - adds configuration options for horizontal and vertical padding in the status bar
       - refer to [https://dwm.suckless.org/patches/statuspadding/](https://dwm.suckless.org/patches/statuspadding/)
 
-   - [switchtag](patches/dwm-switchtag-6.2.diff)
+   - [switchtag](https://github.com/bakkeby/patches/tree/master/dwm/dwm-switchtag-6.2.diff)
       - dwm allow you to set application specific rules so that you can have your browser, for example, start up on tag 9 optionally on a given monitor
       - when you open your browser it is then automatically moved to the configured tag, but you have to manually enable the tag to see the newly opened application
       - this patch adds an extra configuration option for individual rules where
@@ -126,29 +126,29 @@ Patches included:
       - opening the application a second time, however, will not result in the tag changing automatically as application rules do not apply in this situation (they are only highlighted as urgent)
       - for this reason I would recommend combining this with the `focusonnetactive` patch
 
-   - [systray](patches/dwm-systray-6.2.diff)
+   - [systray](https://github.com/bakkeby/patches/tree/master/dwm/dwm-systray-6.2.diff)
       - a systray in dwm is something that I thought I did not need, but eventually for work related reasons I did and standalone systray applications did not work that well for me
-      - getting a system tray up and running in dwm is fairly straightforward based on the patches available on the reference site, but once you add the [alpha](patches/dwm-alpha-6.2.diff) patch into the mix it is a different story entirely
+      - getting a system tray up and running in dwm is fairly straightforward based on the patches available on the reference site, but once you add the [alpha](https://github.com/bakkeby/patches/tree/master/dwm/dwm-alpha-6.2.diff) patch into the mix it is a different story entirely
       - managing to get the system tray to play well with a transparent menu bar has arguably been the most challenging patch that I have applied so far
       - for reference I have prepared two patches
-         - a combined alpha and systray patch on top of 6.2: [dwm-alpha-and-systray-6.2.diff](patches/dwm-alpha-and-systray-6.2.diff)
-         - a standalone patch applying my custom systray on top of an already applied 6.2 alpha patch: [dwm-systray-on-top-of-alpha-6.2.diff](patches/dwm-systray-on-top-of-alpha-6.2.diff)
+         - a combined alpha and systray patch on top of 6.2: [dwm-alpha-and-systray-6.2.diff](https://github.com/bakkeby/patches/tree/master/dwm/dwm-alpha-and-systray-6.2.diff)
+         - a standalone patch applying my custom systray on top of an already applied 6.2 alpha patch: [dwm-systray-on-top-of-alpha-6.2.diff](https://github.com/bakkeby/patches/tree/master/dwm/dwm-systray-on-top-of-alpha-6.2.diff)
       - refer to [https://dwm.suckless.org/patches/systray/](https://dwm.suckless.org/patches/systray/)
 
-   - [tagallmon](patches/dwm-tagallmon-6.2.diff)
+   - [tagallmon](https://github.com/bakkeby/patches/tree/master/dwm/dwm-tagallmon-6.2.diff)
       - dwm comes with a function `tagmon` that allows you to send a window to an adjacent monitor
       - this patch replicates the same behaviour, but for all visible windows on the current monitor
       - let's you _swoosh_ everything to the side before opening something else while reassuring onlookers that yes you do live up to wearing those sunglasses while working
 
-   - [tagmonfixfs](patches/dwm-tagmonfixfs-6.2.diff)
+   - [tagmonfixfs](https://github.com/bakkeby/patches/tree/master/dwm/dwm-tagmonfixfs-6.2.diff)
       - if you try to send a fullscreen window to an adjacent monitor using `tagmon` then the window is moved behind the scenes, but it remains in fullscreen on the original monitor until you exit fullscreen view (at which point it will appear on the adjacent monitor)
       - this patch allows a fullscreen window to be moved to an adjacent monitor while remaining in fullscreen
 
-   - [tagswapmon](patches/dwm-tagswapmon-6.2.diff)
+   - [tagswapmon](https://github.com/bakkeby/patches/tree/master/dwm/dwm-tagswapmon-6.2.diff)
       - similarly to `tagallmon` this patch allows you to swap all visible windows on the current monitor with all visible windows on an adjacent monitor
       - this may be useful if you have a large main (master) display and one or more smaller secondary (stack) displays
 
-   - [togglefullscreen](patches/dwm-togglefullscreen-6.2.diff)
+   - [togglefullscreen](https://github.com/bakkeby/patches/tree/master/dwm/dwm-togglefullscreen-6.2.diff)
       - a simple patch that lets you toggle fullscreen on and off using a single keybinding
       - this is more practical than you might think as many programs have inconsistent shortcuts for going into fullscreen
 
@@ -172,11 +172,11 @@ Patches included:
          - [flextile](https://dwm.suckless.org/patches/flextile/) (refer to the flextile patch for this)
       - [cfacts](https://dwm.suckless.org/patches/cfacts/) support for tile, bottomstack, centeredmaster and deck layouts can be found in [dwm-vanitygaps-cfacts-6.2.diff](patches/dwm-vanitygaps-cfacts-6.2.diff)
 
-   - [windowrolerule](patches/dwm-windowrolerule-6.2.diff)
+   - [windowrolerule](https://github.com/bakkeby/patches/tree/master/dwm/dwm-windowrolerule-6.2.diff)
       - sometimes a single application opens different windows depending on the task at hand and this is often reflected in the `WM_WINDOW_ROLE(STRING)` x property
       - this patch adds the role field to the rule configuration so that one can differentiate between, say, Firefox "browser" vs "Preferences" vs "Manager" or Google-chrome "browser" vs "pop-up"
 
-   - [zoomswap](patches/dwm-zoomswap-6.2.diff)
+   - [zoomswap](https://github.com/bakkeby/patches/tree/master/dwm/dwm-zoomswap-6.2.diff)
       - the default behaviour in dwm when using zoom (i.e. moving a window to become the new master) is to use _pop_ to re-attach the window on top of the chain
       - this has the side effect of moving every window down as well, resulting in every window on the screen changing position
       - the zoomswap patch changes this behaviour so that the current master swaps position with the other window that is to become the new master
