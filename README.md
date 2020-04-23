@@ -1,5 +1,7 @@
 My dwm 6.2 build with custom patches. Refer to [https://dwm.suckless.org/](https://dwm.suckless.org/) for details on the dwm window manager, how to install it and how it works.
 
+NB! This is more or less obsolete now. I'd recommend checking out [dwm-flexipatch](https://github.com/bakkeby/dwm-flexipatch) instead.
+
 ---
 
 How does this build / fork of dwm stand out compared to so many others? Due to the nature of dwm and arbitrary restrictions such as not exceeding a certain number of lines of code, individual patches can be applied in order to tailor it to your needs. The side effect of this is that most patches, and in turn most builds, are essentially hardcoded to offer specific features.

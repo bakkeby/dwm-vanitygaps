@@ -546,6 +546,7 @@ attachx(Client *c)
 				break;
 
 			at->next = c;
+			c->next = NULL;
 			return;
 	}
 
