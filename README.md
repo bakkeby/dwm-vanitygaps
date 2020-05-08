@@ -154,7 +154,7 @@ Patches included:
       - a simple patch that lets you toggle fullscreen on and off using a single keybinding
       - this is more practical than you might think as many programs have inconsistent shortcuts for going into fullscreen
 
-   - [vanitygaps](patches/dwm-vanitygaps-6.2.diff)
+   - [vanitygaps](https://github.com/bakkeby/patches/blob/master/dwm/dwm-vanitygaps-6.2.diff)
       - there are a few patches out there that add fixed gaps between windows, with or without gaps betwen the screen frame and clients
       - vanity gaps do this as well, with the difference that the size of inner and outer gaps can be configured separately (as well as the size of horizontal and vertical gaps, respectively)
       - additionally the size of the gaps can be altered on the fly using keyboard shortcuts (in practice though this is mostly for demo-purposes)
@@ -172,7 +172,7 @@ Patches included:
          - [horizgrid](https://dwm.suckless.org/patches/horizgrid/)
          - [nrowgrid](https://dwm.suckless.org/patches/nrowgrid/)
          - [flextile](https://dwm.suckless.org/patches/flextile/) (refer to the flextile patch for this)
-      - [cfacts](https://dwm.suckless.org/patches/cfacts/) support for tile, bottomstack, centeredmaster and deck layouts can be found in [dwm-vanitygaps-cfacts-6.2.diff](patches/dwm-vanitygaps-cfacts-6.2.diff)
+      - [cfacts](https://dwm.suckless.org/patches/cfacts/) support for tile, bottomstack, centeredmaster and deck layouts can be found in [dwm-cfacts-vanitygaps-6.2.diff](https://github.com/bakkeby/patches/blob/master/dwm/dwm-cfacts-vanitygaps-6.2.diff)
 
    - [windowrolerule](https://github.com/bakkeby/patches/tree/master/dwm/dwm-windowrolerule-6.2.diff)
       - sometimes a single application opens different windows depending on the task at hand and this is often reflected in the `WM_WINDOW_ROLE(STRING)` x property
