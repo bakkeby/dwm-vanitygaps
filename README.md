@@ -159,7 +159,7 @@ Patches included:
       - vanity gaps do this as well, with the difference that the size of inner and outer gaps can be configured separately (as well as the size of horizontal and vertical gaps, respectively)
       - additionally the size of the gaps can be altered on the fly using keyboard shortcuts (in practice though this is mostly for demo-purposes)
       - besides vanity reasons (read: unixporn), gaps can also remove a bit of the claustrophobic feel that tiling window managers often impose on new users
-      - includes smartgaps support: whether or not to include outer borders when a single window is open
+      - includes smartgaps support: whether or not to include outer gaps when a single window is open
       - includes the option of toggling gaps on and off
       - includes a series of vanitygap-enabled layouts (nobody should need this many though, the idea being that you remove the ones you don't need):
          - the default tile layout
