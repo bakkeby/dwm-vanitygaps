@@ -1,6 +1,10 @@
-My dwm 6.2 build with custom patches. Refer to [https://dwm.suckless.org/](https://dwm.suckless.org/) for details on the dwm window manager, how to install it and how it works.
+This old obsolete dwm project is very much out of date and has been archived.
 
-NB! This is more or less obsolete now. I'd recommend checking out [dwm-flexipatch](https://github.com/bakkeby/dwm-flexipatch) instead.
+For dwm refer to [dwm-flexipatch](https://github.com/bakkeby/dwm-flexipatch) and for individual patches refer to [this](https://github.com/bakkeby/patches/wiki) page instead.
+
+---
+
+My dwm 6.2 build with custom patches. Refer to [https://dwm.suckless.org/](https://dwm.suckless.org/) for details on the dwm window manager, how to install it and how it works.
 
 ---
 
